@@ -7,5 +7,9 @@ Collaborators:
 - [Xiu](https://github.com/Hap-Hugh)
 ## Structure Propagation
 Contributed by Jessie Peng
+### Evironment
+- Language: C++14
+- IDE: CLion 2018.3
+- OpenCV 4.0.1
 ## Texture Synthesis
 Contributed by Xiu
