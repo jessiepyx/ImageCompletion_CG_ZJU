@@ -1,6 +1,14 @@
 #pragma  once
-#include <Wang_Utility/OpenCvUtility.h>
-#include <Wang_Utility/MatrixBasedOnVector.h>
+
+#include <iostream>
+#include <vector>
+#include <opencv2/opencv.hpp>
+#include "OpenCvUtility.h"
+#include "StructurePropagation.h"
+
+using namespace std;
+using namespace cv;
+
 class StructurePropagation
 {
 public:

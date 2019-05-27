@@ -1,8 +1,13 @@
-// StructurePropagation.cpp : Defines the entry point for the console application.
-#include "stdafx.h"
-#include "StructurePropagation.h"
-#include <OpenCvUtility.h>
+#include <iostream>
 #include <fstream>
+#include <vector>
+#include <opencv2/opencv.hpp>
+#include "OpenCvUtility.h"
+#include "StructurePropagation.h"
+
+using namespace std;
+using namespace cv;
+
 Point points[2]={Point(-1,-1),Point(-1,-1)};
 int points_i=0;
 Mat3b img;
@@ -34,7 +39,7 @@ void onmouse(int event,int x,int y,int flags,void* parm)
 			DrawPoints(PointsList,result_copy,Scalar(255,0,255),1);//×ÏÉ«
 			circle(result_copy,points[0],3,Scalar(255,0,0),CV_FILLED);//À¶É«
 			circle(result_copy,points[1],3,Scalar(255,0,0),CV_FILLED);
-			rectangle(result_copy,RectByCenter(PointsList[0],blocksize),CV_RGB(255,0,0),2);
+//			rectangle(result_copy,RectByCenter(PointsList[0],blocksize),CV_RGB(255,0,0),2);
 			imshow("img",result_copy);
 		}
 	}
@@ -45,7 +50,7 @@ void onmouse(int event,int x,int y,int flags,void* parm)
 		if( event == CV_EVENT_LBUTTONDOWN )
 		{
 			prev_pt = cvPoint(x,y);
-			rectangle(result_copy,RectByCenter(prev_pt,blocksize),CV_RGB(255,0,0),2);
+//			rectangle(result_copy,RectByCenter(prev_pt,blocksize),CV_RGB(255,0,0),2);
 			mousepoints.push_back(prev_pt);
 		}
 		else if( event == CV_EVENT_MOUSEMOVE && (flags & CV_EVENT_FLAG_LBUTTON) )
@@ -62,10 +67,10 @@ void onmouse(int event,int x,int y,int flags,void* parm)
 	}
 }
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {
-	img=imread("img.jpg",1);
-	mask=imread("mask.bmp",0);
+	img = imread("img.jpg", 1);
+	mask = imread("mask.bmp", 0);
 
 	//img=imread("curve_test1.png",1);
 	//mask=imread("curve_test1.bmp",0);
@@ -74,14 +79,18 @@ int _tmain(int argc, _TCHAR* argv[])
 	result.zeros(img.size());
 	img.copyTo(result,mask);
 	namedWindow("img");
-	namedWindow("mask");
+//	namedWindow("mask");
 	createTrackbar("BlockSize","img",&blocksize,50);
 	createTrackbar("SampleStep","img",&samplestep,20);
 	int iscurve_temp=0;
 	createTrackbar("iscurve","img",&iscurve_temp, 1);
 	setMouseCallback("img",onmouse);
+
+	cout << result.size() << endl;
+	cout << mask.size() << endl;
+
 	imshow("img",result);
-	imshow("mask",mask);
+//	imshow("mask",mask);
 	//StructurePropagation SP;
 	//SP.SetParm(blocksize,samplestep,iscurve);
 	Mat3b Local_Result_Copy(result.size());
@@ -98,11 +107,11 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			file<<blocksize<<"   "<<samplestep<<endl;
 			if(iscurve)
-				Wang_GetCurve(mousepoints,PointsList);
-			//DrawPoints(PointsList,img,CV_RGB(255,0,0),1);
+//				Wang_GetCurve(mousepoints,PointsList);
+			DrawPoints(PointsList,img,CV_RGB(255,0,0),1);
 			//SP.SetParm(blocksize,samplestep,iscurve);
 			//SP.Run(mask,img,PointsList,Local_Result_Copy);
-			imshow("img",Local_Result_Copy);
+//			imshow("img",Local_Result_Copy);
 		}
 		else if (c=='r')
 		{
@@ -117,9 +126,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		else if(c=='e')
 		{
-			Wang_GetCurve(mousepoints,PointsList);
-			DrawPoints(PointsList,result_copy,CV_RGB(255,0,0),1);
-			imshow("img",result_copy);
+//			Wang_GetCurve(mousepoints,PointsList);
+//			DrawPoints(PointsList,result_copy,CV_RGB(255,0,0),1);
+//			imshow("img",result_copy);
 		}
 	}
 	file.close();

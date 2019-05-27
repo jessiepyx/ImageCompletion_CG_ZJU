@@ -1,5 +1,11 @@
-#include "stdafx.h"
+#include <iostream>
+#include <vector>
+#include <opencv2/opencv.hpp>
 #include "OpenCvUtility.h"
+
+using namespace std;
+using namespace cv;
+
 void LineInterpolation(Point points[2],vector<Point> &PointList)
 {
 	PointList.clear();
@@ -39,7 +45,7 @@ void Wang_GetCurve(const vector<Point>& mouse_points,vector<Point> &PointList)
 		Point points_temp[2]={mouse_points[i],mouse_points[i+1]};
 		LineInterpolation(points_temp,temp_list);
 		PointList.insert(PointList.end(),temp_list.begin(),temp_list.end());
-		//½«temp_listÖÃÎª0
+		//ï¿½ï¿½temp_listï¿½ï¿½Îª0
 		temp_list.clear();
 		temp_list.reserve(0);
 	}
