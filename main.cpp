@@ -79,27 +79,27 @@ void onmouse(int event,int x,int y,int flags,void* parm)
 int main(int argc, char* argv[])
 {
 	mask = Mat::zeros(img.rows, img.cols, CV_8UC1);
-	//img=imread("img.jpg",1);
-	//mask=imread("mask.bmp",0);
+//	img=imread("img.jpg",1);
+//	mask=imread("mask.bmp",0);
 
-	//img=imread("curve_test1.png",1);
-	//mask=imread("curve_test1.bmp",0);
+//	img=imread("curve_test1.png",1);
+//	mask=imread("curve_test1.bmp",0);
 
-	img = imread("curve_test2.png", 1);
-	mask = imread("curve_test2.bmp", 0);
+//	img = imread("curve_test2.png", 1);
+//	mask = imread("curve_test2.bmp", 0);
 
 //	img = imread("img_small.jpg", 1);//5,1
 //	mask = imread("mymask.bmp", 0);
 
-	//img = imread("K.png", 1);
-	//mask=imread("K.bmp",0);
+//	img = imread("K.png", 1);
+//	mask=imread("K.bmp",0);
 
-	//img = imread("img1.jpg", 1);
-	//mask=imread("mask1.bmp",0);
+	img = imread("img1.jpg", 1);
+	mask=imread("mask1.bmp",0);
 
-	//img = imread("plant_small.jpg", 1);
-	//img = imread("plant.jpg", 1);
-	//mask = imread("tmp_mask.bmp", 0);
+//	img = imread("plant_small.jpg", 1);
+//	img = imread("plant.jpg", 1);
+//	mask = imread("tmp_mask.bmp", 0);
 	Mat1b Linemask = Mat::zeros(img.rows, img.cols, CV_8UC1);
 
 	threshold(mask,mask,125,255,CV_THRESH_BINARY_INV);
@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
 		else if (c=='a')
 		{
 			// save results
-			imwrite("result.jpg",Local_Result_Copy);
+			imwrite("result2/5.png",Local_Result_Copy);
 		}
 		else if(c=='e')
 		{
