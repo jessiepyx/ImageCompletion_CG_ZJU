@@ -7,190 +7,49 @@
 using namespace std;
 using namespace cv;
 
-Point points[2]={Point(-1,-1),Point(-1,-1)};
-int points_i=0;
-
-Mat3b result;
-Mat3b result_copy;
-vector<vector<Point>> PointsList;
-vector<vector<Point>> mousepoints;
-vector<Point> curvePoints;
-int blocksize=10;
-int samplestep=2;
-bool iscurve=true;
-ofstream file;
-
 #define NUM_OF_IMAGES 7
 #define USER_DRAW_MASK 0
 #define PRE_MADE_MASK 1
-Mat3b img;
-Mat1b mask;
-Mat1b mask_inv;
-Mat3b draw_mask;
-Mat3b show_brush;
-int img_current = 0;
-Point2i pt;
-Point2i prev_pt;
+#define LINE_STRUCTURE 0
+#define CURVE_STRUCTURE 1
+
+Mat img;
+Mat mask;
+Mat mask_inv;
+Mat draw_mask;
+Mat show_brush;
+Mat img_masked;
+Mat draw_structure;
+Mat1b mask_structure;
+Mat sp_result;
+Mat ts_result;
+Point pt;
+Point prev_pt;
+Point points[2] = {Point(-1, -1), Point(-1, -1)};
+vector<Point> curvePoints;
+vector<vector<Point>> PointsList;
+vector<vector<Point>> mousepoints;
+StructurePropagation SP;
 int brush_size;
+int img_current = 0;
+int block_size = 10;
+int sample_step = 2;
+int line_or_curve = LINE_STRUCTURE;
+int points_i=0;
+
 void get_input_image();
 void get_input_mask(int mask_from);
 static void callback_draw_mask(int event, int x, int y, int flags, void* param);
-
-void onmouse(int event,int x,int y,int flags,void* parm)
-{
-	if(!iscurve)
-	{
-		if (event!=CV_EVENT_LBUTTONDOWN)
-			return;
-		points[points_i].x=x;
-		points[points_i].y=y;
-		//cout<<x<<"  "<<y<<"  "<<points[0]<<" "<<points[1]<<endl;
-		points_i=(points_i+1)%2;
-		if (points[0].x!=-1&&points[1].x!=-1&&points_i==0)
-		{
-			// result.copyTo(result_copy);
-			file<<points[0]<<"  "<<points[1]<<endl;
-			vector<Point> line;
-			LineInterpolation(points, line);
-			PointsList.push_back(line);
-			DrawPoints(line, result_copy, Scalar(255, 0, 255), 1);//×ÏÉ«
-			circle(result_copy,points[0],3,Scalar(255,0,0),CV_FILLED);//À¶É«
-			circle(result_copy,points[1],3,Scalar(255,0,0),CV_FILLED);
-			
-			// rectangle(result_copy,RectByCenter(PointsList[0],blocksize),CV_RGB(255,0,0),2);
-			imshow("img",result_copy);
-		}
-	}
-	else
-	{
-		if (event == CV_EVENT_LBUTTONUP) {
-			prev_pt = cvPoint(-1, -1);
-			mousepoints.push_back(curvePoints);
-			curvePoints = vector<Point>();
-		}
-		if( event == CV_EVENT_LBUTTONDOWN )
-		{
-			prev_pt = cvPoint(x,y);
-			// rectangle(result_copy,RectByCenter(prev_pt,blocksize),CV_RGB(255,0,0),2);
-			curvePoints.push_back(prev_pt);
-		}
-		else if( event == CV_EVENT_MOUSEMOVE && (flags & CV_EVENT_FLAG_LBUTTON) )
-		{
-			CvPoint pt = cvPoint(x,y);
-			curvePoints.push_back(pt);
-			if( prev_pt.x < 0 )
-				prev_pt = pt;
-			//cvLine( inpaint_mask, prev_pt, pt, cvScalarAll(255), 5, 8, 0 );
-			line( result_copy, prev_pt, pt, cvScalarAll(255), 1, 8, 0 );
-			prev_pt = pt;
-			imshow( "img", result_copy );
-		}
-	}
-}
+void make_masked_image();
+void show_interface();
+static void callback_draw_structure(int event, int x, int y, int flags, void* param);
 
 int main(int argc, char* argv[])
 {
     get_input_image();
-    get_input_mask(USER_DRAW_MASK);
-
-	Mat1b Linemask = Mat::zeros(img.rows, img.cols, CV_8UC1);
-
-	threshold(mask,mask,125,255,CV_THRESH_BINARY_INV);
-	result.zeros(img.size());
-	img.copyTo(result,mask);
-	namedWindow("img");
-	//namedWindow("mask");
-	createTrackbar("BlockSize","img",&blocksize,50);
-	createTrackbar("SampleStep","img",&samplestep,20);
-	int iscurve_temp=false;
-	createTrackbar("iscurve","img",&iscurve_temp, 1);
-	prev_pt = Point(-1, -1);
-	setMouseCallback("img",onmouse);
-	imshow("img",result);
-	//imshow("mask",mask);
-	StructurePropagation SP;
-	SP.SetParm(blocksize,samplestep,iscurve);
-	Mat3b Local_Result_Copy(result.size());
-	result.copyTo(Local_Result_Copy);
-	result.copyTo(result_copy);
-	//file.open("test.txt");
-	for (;;)
-	{
-		iscurve=iscurve_temp;
-		char c=cvWaitKey(10);
-		if (c==27)
-			break;
-		else if (c=='s')
-		{
-			file<<blocksize<<"   "<<samplestep<<endl;
-			if (iscurve) {
-				PointsList.resize(mousepoints.size());
-				for (int i = 0; i < mousepoints.size(); i++) {
-					Wang_GetCurve(mousepoints[i], PointsList[i]);
-				}
-			}
-
-			for (int i = 0; i < PointsList.size(); i++) {
-				DrawPoints(PointsList[i], img, CV_RGB(255, 0, 0), 1);
-			}
-			SP.SetParm(blocksize,samplestep,iscurve);
-			SP.Run(mask,result,Linemask,PointsList,Local_Result_Copy);
-			imshow("img", Local_Result_Copy);
-			Local_Result_Copy.copyTo(result_copy);
-			PointsList.clear();
-			mousepoints.clear();
-		}
-		else if (c=='r')
-		{
-			// clear lines
-			result.copyTo(result_copy);
-			result.copyTo(Local_Result_Copy);
-			PointsList.clear();
-			mousepoints.clear();
-			Linemask = Mat::zeros(img.rows, img.cols, CV_8UC1);
-			imshow("img",result_copy);
-		}
-		else if (c=='a')
-		{
-			// save results
-			imwrite("result2/5.png",Local_Result_Copy);
-		}
-		else if(c=='e')
-		{
-			PointsList.resize(mousepoints.size());
-			for (int i = 0; i < mousepoints.size(); i++) {
-				Wang_GetCurve(mousepoints[i], PointsList[i]);
-				DrawPoints(PointsList[i], result_copy, CV_RGB(255, 0, 0), 1);
-			}
-			imshow("img",result_copy);
-		}
-		else if (c == 'm') {
-			if (iscurve && mousepoints.size() > 0) {
-				getMask(mousepoints[mousepoints.size() - 1], img, mask);
-				result = Mat::zeros(img.rows, img.cols, CV_8UC3);
-				img.copyTo(result, mask);
-				imshow("img", result);
-				// imwrite("tmp_mask.bmp", mask);
-				result.copyTo(Local_Result_Copy);
-				result.copyTo(result_copy);
-				for (int i = 0; i < mask.rows;i++)
-				for (int j = 0; j < mask.cols; j++)mask.at<uchar>(i, j) = 255 - mask.at<uchar>(i, j);
-				imwrite("tmp_mask.bmp", mask);
-				
-				mousepoints.clear();
-			}
-		}
-		else if (c == 't') {
-			Mat tmp = result_copy.clone();
-			for (int i = 0; i < PointsList.size(); i++) {
-				DrawPoints(PointsList[i], img, CV_RGB(255, 0, 0), 1);
-			}
-			imshow("img", Local_Result_Copy);
-			SP.TextureCompletion2(mask, Linemask, tmp, Local_Result_Copy);
-			imshow("img", Local_Result_Copy);
-		}
-	}
-	file.close();
+    get_input_mask(PRE_MADE_MASK);
+    make_masked_image();
+    show_interface();
 	return 0;
 }
 
@@ -236,11 +95,12 @@ void get_input_mask(int mask_from)
     {
         mask = Mat::zeros(img.rows, img.cols, CV_8UC1);
         draw_mask = img.clone();
+        show_brush = draw_mask.clone();
         brush_size = 30;
         prev_pt = Point(-1, -1);
 
         namedWindow("draw mask");
-        imshow("draw mask", draw_mask);
+        imshow("draw mask", show_brush);
         setMouseCallback("draw mask", callback_draw_mask);
 
         char k = waitKey(0);
@@ -256,6 +116,7 @@ void get_input_mask(int mask_from)
             // smaller brush
             else if (k == '[')
             {
+                cout << "[" << endl;
                 if (brush_size > 1)
                 {
                     brush_size--;
@@ -269,12 +130,18 @@ void get_input_mask(int mask_from)
                     brush_size++;
                 }
             }
+
+            show_brush = draw_mask.clone();
+            circle(show_brush, pt, brush_size, Scalar(255, 0, 255), -1);
+            imshow("draw mask", show_brush);
+
+            k = waitKey(0);
         }
     }
     // load pre-made mask
     else if (mask_from == PRE_MADE_MASK)
     {
-        mask = imread("mask" + to_string(img_current) + ".png",0);
+        mask = imread("mask" + to_string(img_current) + ".png", 0);
     }
     threshold(mask, mask_inv, 100, 255, CV_THRESH_BINARY_INV);
     destroyAllWindows();
@@ -301,7 +168,164 @@ static void callback_draw_mask(int event, int x, int y, int flags, void* param)
         prev_pt = Point(-1, -1);
     }
 
-    Mat show_brush = draw_mask.clone();
+    show_brush = draw_mask.clone();
     circle(show_brush, pt, brush_size, Scalar(255, 0, 255), -1);
     imshow("draw mask", show_brush);
+}
+
+/**
+ * Mask the region of interest.
+ */
+void make_masked_image()
+{
+	img_masked = Mat::zeros(img.size(), CV_8UC3);
+	img.copyTo(img_masked, mask_inv);
+	imwrite("img_masked" + to_string(img_current) + ".png", img_masked);
+}
+
+/**
+ * Show the user interface for drawing structural lines and curves.
+ * Press Key 's' to run structure propagation, and Key 't' to run texture synthesis.
+ * Press Key 'r' to reset, and Key 'a' to save.
+ * Press Key 'e' to show curve points.
+ */
+void show_interface()
+{
+	prev_pt = Point(-1, -1);
+	sp_result = img_masked.clone();
+	draw_structure = img_masked.clone();
+
+	namedWindow("run");
+	createTrackbar("Block Size", "run", &block_size, 50);
+	createTrackbar("Sample Step", "run", &sample_step, 20);
+	createTrackbar("Line or Curve", "run", &line_or_curve, 1);
+	imshow("run", draw_structure);
+	setMouseCallback("run", callback_draw_structure);
+
+	char k = waitKey(0);
+	while (k != 27)
+	{
+		// structure propagation
+		if (k == 's')
+		{
+            if (line_or_curve == CURVE_STRUCTURE)
+            {
+                PointsList.resize(mousepoints.size());
+                for (int i = 0; i < mousepoints.size(); i++)
+                {
+                    Wang_GetCurve(mousepoints[i], PointsList[i]);
+                }
+            }
+
+            for (int i = 0; i < PointsList.size(); i++)
+            {
+                DrawPoints(PointsList[i], draw_structure, CV_RGB(255, 0, 0), 1);
+            }
+
+            mask_structure = Mat::zeros(img.rows, img.cols, CV_8UC1);
+
+            // run structure porpagation
+            SP.SetParm(block_size, sample_step, line_or_curve);
+            SP.Run(mask_inv, img_masked, mask_structure, PointsList, sp_result);
+
+            draw_structure = sp_result.clone();
+            imshow("run", draw_structure);
+
+            PointsList.clear();
+            mousepoints.clear();
+		}
+		// reset
+		else if (k == 'r')
+        {
+		    draw_structure = img_masked.clone();
+		    sp_result = img_masked.clone();
+            mask_structure = Mat::zeros(img.rows, img.cols, CV_8UC1);
+            imshow("run", draw_structure);
+
+            PointsList.clear();
+            mousepoints.clear();
+        }
+		// save
+		else if (k == 'a')
+        {
+            imwrite("sp_result/sp" + to_string(img_current) + ".png", sp_result);
+            imwrite("ts_result/ts" + to_string(img_current) + ".png", sp_result);
+            imwrite("mask_structure/mask_s" + to_string(img_current) + ".bmp", mask_structure);
+        }
+		// show curve points
+        else if (k == 'e')
+        {
+            PointsList.resize(mousepoints.size());
+            for (int i = 0; i < mousepoints.size(); i++)
+            {
+                Wang_GetCurve(mousepoints[i], PointsList[i]);
+                DrawPoints(PointsList[i], draw_structure, CV_RGB(0, 0, 255), 1);
+            }
+            imshow("run", draw_structure);
+        }
+        // texture synthesis
+        else if (k == 't')
+        {
+            SP.TextureCompletion2(mask, mask_structure, sp_result, ts_result);
+            imshow("run", ts_result);
+        }
+        k = waitKey(0);
+	}
+}
+
+/**
+ * Mouse callback function for drawing the structure lines/curves.
+ */
+static void callback_draw_structure(int event, int x, int y, int flags, void* param)
+{
+    if (line_or_curve == LINE_STRUCTURE)
+    {
+        if (event != CV_EVENT_LBUTTONDOWN)
+        {
+            return;
+        }
+        points[points_i].x = x;
+        points[points_i].y = y;
+        points_i = (points_i + 1) % 2;
+
+        if (points[0].x != -1 && points[1].x != -1 && points_i == 0)
+        {
+            vector<Point> line;
+            LineInterpolation(points, line);
+            PointsList.push_back(line);
+
+            DrawPoints(line, draw_structure, Scalar(255, 0, 255), 1);
+            circle(draw_structure, points[0], 3, Scalar(255,0,0), CV_FILLED);
+            circle(draw_structure, points[1], 3, Scalar(255,0,0), CV_FILLED);
+
+            imshow("run", draw_structure);
+        }
+    }
+    else
+    {
+        if (event == CV_EVENT_LBUTTONUP)
+        {
+            prev_pt = Point(-1, -1);
+            mousepoints.push_back(curvePoints);
+            curvePoints = vector<Point>();
+        }
+        if ( event == CV_EVENT_LBUTTONDOWN )
+        {
+            prev_pt = Point(x, y);
+            curvePoints.push_back(prev_pt);
+        }
+        else if (event == CV_EVENT_MOUSEMOVE && (flags & CV_EVENT_FLAG_LBUTTON))
+        {
+            pt = Point(x,y);
+            curvePoints.push_back(pt);
+
+            if (prev_pt.x < 0)
+            {
+                prev_pt = pt;
+            }
+            line(draw_structure, prev_pt, pt, cvScalarAll(255), 1, 8, 0);
+            prev_pt = pt;
+            imshow("run", draw_structure);
+        }
+    }
 }
