@@ -141,7 +141,7 @@ void get_input_mask(int mask_from)
     // load pre-made mask
     else if (mask_from == PRE_MADE_MASK)
     {
-        mask = imread("mask" + to_string(img_current) + ".png", 0);
+        mask = imread("mask" + to_string(img_current) + ".bmp", 0);
     }
     threshold(mask, mask_inv, 100, 255, CV_THRESH_BINARY_INV);
     destroyAllWindows();
