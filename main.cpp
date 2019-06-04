@@ -1,6 +1,4 @@
-// StructurePropagation.cpp : Defines the entry point for the console application.
 #include <iostream>
-#include <fstream>
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include "StructurePropagation.h"
@@ -11,18 +9,32 @@ using namespace cv;
 
 Point points[2]={Point(-1,-1),Point(-1,-1)};
 int points_i=0;
-Mat3b img;
-Mat1b mask;
+
 Mat3b result;
 Mat3b result_copy;
 vector<vector<Point>> PointsList;
-Point prev_pt(-1,-1);
 vector<vector<Point>> mousepoints;
 vector<Point> curvePoints;
 int blocksize=10;
 int samplestep=2;
 bool iscurve=true;
 ofstream file;
+
+#define NUM_OF_IMAGES 7
+#define USER_DRAW_MASK 0
+#define PRE_MADE_MASK 1
+Mat3b img;
+Mat1b mask;
+Mat1b mask_inv;
+Mat3b draw_mask;
+Mat3b show_brush;
+int img_current = 0;
+Point2i pt;
+Point2i prev_pt;
+int brush_size;
+void get_input_image();
+void get_input_mask(int mask_from);
+static void callback_draw_mask(int event, int x, int y, int flags, void* param);
 
 void onmouse(int event,int x,int y,int flags,void* parm)
 {
@@ -78,28 +90,9 @@ void onmouse(int event,int x,int y,int flags,void* parm)
 
 int main(int argc, char* argv[])
 {
-	mask = Mat::zeros(img.rows, img.cols, CV_8UC1);
-//	img=imread("img.jpg",1);
-//	mask=imread("mask.bmp",0);
+    get_input_image();
+    get_input_mask(USER_DRAW_MASK);
 
-//	img=imread("curve_test1.png",1);
-//	mask=imread("curve_test1.bmp",0);
-
-//	img = imread("curve_test2.png", 1);
-//	mask = imread("curve_test2.bmp", 0);
-
-//	img = imread("img_small.jpg", 1);//5,1
-//	mask = imread("mymask.bmp", 0);
-
-//	img = imread("K.png", 1);
-//	mask=imread("K.bmp",0);
-
-	img = imread("img1.jpg", 1);
-	mask=imread("mask1.bmp",0);
-
-//	img = imread("plant_small.jpg", 1);
-//	img = imread("plant.jpg", 1);
-//	mask = imread("tmp_mask.bmp", 0);
 	Mat1b Linemask = Mat::zeros(img.rows, img.cols, CV_8UC1);
 
 	threshold(mask,mask,125,255,CV_THRESH_BINARY_INV);
@@ -111,6 +104,7 @@ int main(int argc, char* argv[])
 	createTrackbar("SampleStep","img",&samplestep,20);
 	int iscurve_temp=false;
 	createTrackbar("iscurve","img",&iscurve_temp, 1);
+	prev_pt = Point(-1, -1);
 	setMouseCallback("img",onmouse);
 	imshow("img",result);
 	//imshow("mask",mask);
@@ -200,3 +194,114 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+/**
+ * Choose one of the original images as input.
+ * Press Key '[' to switch to last one, and Key ']' to switch to next one.
+ * Press Key 'esc' to confirm the choice.
+ */
+void get_input_image()
+{
+    img = imread("img" + to_string(img_current) + ".png", 1);
+    imshow("img", img);
+    char k = waitKey(0);
+    while (k != 27)
+    {
+        // last image
+        if (k == '[')
+        {
+            img_current = (img_current + NUM_OF_IMAGES - 1) % NUM_OF_IMAGES;
+        }
+        // next image
+        else if (k == ']')
+        {
+            img_current = (img_current + 1) % NUM_OF_IMAGES;
+        }
+        img = imread("img" + to_string(img_current) + ".png", 1);
+        imshow("img", img);
+        k = waitKey(0);
+    }
+    destroyAllWindows();
+}
+
+/**
+ * Get a mask for the region of interest from the input image.
+ * If user draws the mask,
+ *      press Key '[' to get a smaller brush, and Key ']' to get a larger brush;
+ *      press Key 'esc' to save the mask, and Key 'r' to reset.
+ */
+void get_input_mask(int mask_from)
+{
+    // user draws the mask
+    if (mask_from == USER_DRAW_MASK)
+    {
+        mask = Mat::zeros(img.rows, img.cols, CV_8UC1);
+        draw_mask = img.clone();
+        brush_size = 30;
+        prev_pt = Point(-1, -1);
+
+        namedWindow("draw mask");
+        imshow("draw mask", draw_mask);
+        setMouseCallback("draw mask", callback_draw_mask);
+
+        char k = waitKey(0);
+        while (k != 27)
+        {
+            // reset
+            if (k == 'r')
+            {
+                mask = Mat::zeros(img.rows, img.cols, CV_8UC1);
+                draw_mask = img.clone();
+                prev_pt = Point(-1, -1);
+            }
+            // smaller brush
+            else if (k == '[')
+            {
+                if (brush_size > 1)
+                {
+                    brush_size--;
+                }
+            }
+            // larger brush
+            else if (k == ']')
+            {
+                if (brush_size < 40)
+                {
+                    brush_size++;
+                }
+            }
+        }
+    }
+    // load pre-made mask
+    else if (mask_from == PRE_MADE_MASK)
+    {
+        mask = imread("mask" + to_string(img_current) + ".png",0);
+    }
+    threshold(mask, mask_inv, 100, 255, CV_THRESH_BINARY_INV);
+    destroyAllWindows();
+}
+
+/**
+ * Mouse callback function for drawing the mask.
+ */
+static void callback_draw_mask(int event, int x, int y, int flags, void* param)
+{
+    pt = Point(x, y);
+    if ((event == CV_EVENT_MOUSEMOVE && (flags & CV_EVENT_FLAG_LBUTTON)) || event == CV_EVENT_LBUTTONDOWN)
+    {
+        if (prev_pt.x == -1)
+        {
+            prev_pt = pt;
+        }
+        line(mask, prev_pt, pt, Scalar(255), 1.5 * brush_size);
+        line(draw_mask, prev_pt, pt, Scalar(255, 0, 0), 1.5 * brush_size);
+        prev_pt = pt;
+    }
+    else if (event == CV_EVENT_LBUTTONUP)
+    {
+        prev_pt = Point(-1, -1);
+    }
+
+    Mat show_brush = draw_mask.clone();
+    circle(show_brush, pt, brush_size, Scalar(255, 0, 255), -1);
+    imshow("draw mask", show_brush);
+}
