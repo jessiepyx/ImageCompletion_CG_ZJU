@@ -180,7 +180,7 @@ void make_masked_image()
 {
 	img_masked = Mat::zeros(img.size(), CV_8UC3);
 	img.copyTo(img_masked, mask_inv);
-	imwrite("img_masked" + to_string(img_current) + ".png", img_masked);
+	imwrite("img_masked/img_m" + to_string(img_current) + ".png", img_masked);
 }
 
 /**
