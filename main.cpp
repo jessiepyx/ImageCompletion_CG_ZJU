@@ -63,16 +63,19 @@ void get_input_image()
     img = imread("img" + to_string(img_current) + ".png", 1);
     imshow("img", img);
     char k = waitKey(0);
+    cout << "choose image" << endl;
     while (k != 27)
     {
         // last image
         if (k == '[')
         {
+            cout << "last" << endl;
             img_current = (img_current + NUM_OF_IMAGES - 1) % NUM_OF_IMAGES;
         }
         // next image
         else if (k == ']')
         {
+            cout << "next" << endl;
             img_current = (img_current + 1) % NUM_OF_IMAGES;
         }
         img = imread("img" + to_string(img_current) + ".png", 1);
@@ -250,7 +253,6 @@ void show_interface()
         {
             imwrite("sp_result/sp" + to_string(img_current) + ".png", sp_result);
             imwrite("ts_result/ts" + to_string(img_current) + ".png", sp_result);
-            imwrite("mask_structure/mask_s" + to_string(img_current) + ".bmp", mask_structure);
         }
 		// show curve points
         else if (k == 'e')
@@ -269,6 +271,14 @@ void show_interface()
             SP.TextureCompletion2(mask, mask_structure, sp_result, ts_result);
             imshow("run", ts_result);
         }
+        // save structure masks
+        else if (k == 'm')
+        {
+            static int m_cnt = 0;
+            imwrite("mask_structure/mask_s" + to_string(img_current) + "_" + to_string(m_cnt) + ".bmp", mask_structure);
+            m_cnt++;
+        }
+
         k = waitKey(0);
 	}
 }
