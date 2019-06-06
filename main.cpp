@@ -263,7 +263,7 @@ void show_interface()
 		else if (k == 'a')
         {
             imwrite("sp_result/sp" + to_string(img_current) + ".png", sp_result); // structure result
-            imwrite("ts_result/ts" + to_string(img_current) + ".png", sp_result); // texture result
+            imwrite("ts_result/ts" + to_string(img_current) + ".png", ts_result); // texture result
             imwrite("mask_structure/mask_s" + to_string(img_current) + ".bmp", mask_structure); // structure mask
         }
 		// show curve points
