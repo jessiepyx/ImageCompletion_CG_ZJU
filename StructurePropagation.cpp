@@ -4,27 +4,28 @@
 #include <time.h>
 #define mp make_pair
 
-void StructurePropagation::Run(const Mat1b &_mask, const Mat& _img, Mat1b &Linemask,vector<vector<Point>> &linePoints, Mat& result) {
+void StructurePropagation::SetParam(int block_size, int sample_step, int line_or_curve)
+{
+	this->block_size = block_size;
+	this->sample_step = sample_step;
+	this->line_or_curve = line_or_curve;
+}
 
-	// Calculate gray map
+void StructurePropagation::Run(const Mat &mask, const Mat& img, Mat &smask, vector<vector<Point>> &plist, Mat& result)
+{
 	time_t start = time(NULL);
-	Mat grayMat = Mat::zeros(_img.rows, _img.cols, CV_8UC1);
-	for (int i = 0; i < _img.rows; i++) {
-		for (int j = 0; j < _img.cols; j++) {
-			Vec3b tmp = _img.at<Vec3b>(i, j);
-			grayMat.at<uchar>(i, j) = (uchar)((114 * tmp[0] + 587 * tmp[1] + 299 * tmp[2] + 500) / 1000);
-		}
-	}
+	Mat grayMat = Mat::zeros(img.rows, img.cols, CV_8UC1);
+	cvtColor(img, grayMat, CV_BGR2GRAY);
 
 	set<shared_ptr<list<int>>> lineSets;
-	pointManager.reset(linePoints, grayMat, blockSize, lineSets);
+	pointManager.reset(plist, grayMat, block_size, lineSets);
 
 	int *sampleIndices;
 	vector<PointPos> anchorPoints;
 	vector<PointPos> samplePoints;
 	set<shared_ptr<list<int>>>::iterator itor;
 	for (itor = lineSets.begin(); itor != lineSets.end(); itor++) {
-		pointManager.getSamplePoints(samplePoints, sampleStep, **itor);
+		pointManager.getSamplePoints(samplePoints, sample_step, **itor);
 		if (samplePoints.size() == 0){
 			continue;
 		}
@@ -66,8 +67,8 @@ void StructurePropagation::Run(const Mat1b &_mask, const Mat& _img, Mat1b &Linem
 		}
 		time_t end = time(NULL);
 		cout << "time consuming:" << end - start << endl;
-		ModifyMask(Linemask, anchorPoints);
-		getResult(_mask, sampleIndices, samplePoints, anchorPoints, result);
+		ModifyMask(smask, anchorPoints);
+		getResult(mask, sampleIndices, samplePoints, anchorPoints, result);
 	}
 	/*pointManager.getSamplePoints(samplePoints, sampleStep, **lineSets.begin());
 	// sampleIndices = DP(samplePoints, anchorPoints, grayMat);
@@ -80,11 +81,11 @@ void StructurePropagation::Run(const Mat1b &_mask, const Mat& _img, Mat1b &Linem
 	getResult(_mask,sampleIndices, samplePoints, anchorPoints, result);*/
 }
 
-void StructurePropagation::ModifyMask(Mat1b &LineMask, vector<PointPos>AnchorPoints)
+void StructurePropagation::ModifyMask(Mat &LineMask, vector<PointPos>AnchorPoints)
 {
 	int N = LineMask.rows, M = LineMask.cols;
-	int offset1 = blockSize / 2;
-	int offset2 = blockSize / 2;
+	int offset1 = block_size / 2;
+	int offset2 = block_size / 2;
 	for (int i = 0; i < AnchorPoints.size(); i++)
 	{
 		Point tar = pointManager.getPoint(AnchorPoints[i]);
@@ -532,7 +533,7 @@ void StructurePropagation::TextureCompletion(const Mat1b &_mask, Mat1b &LineMask
 
 double StructurePropagation::gauss(double x)
 {
-	double sigma = blockSize / 2;
+	double sigma = block_size / 2;
 	double pi = acos(-1);
 	return exp(-x / (2 * sigma*sigma)) / (sqrt(2*pi) * sigma);
 }
@@ -557,15 +558,16 @@ uchar adjust(uchar v0, double alpha, uchar v1, uchar v2)
 }
 
 
-void StructurePropagation::getResult(Mat1b mask, int *sampleIndices, const vector<PointPos> &samplePoints, vector<PointPos> &anchorPoints, Mat& result) {
+void StructurePropagation::getResult(Mat1b mask, int *sampleIndices, const vector<PointPos> &samplePoints, vector<PointPos> &anchorPoints, Mat& result)
+{
 	// copy all sample patches to corresponding anchor pathces
 	for (int i = 0; i < anchorPoints.size(); i++) {
 		cout << sampleIndices[i] << ",";
 	}
 	cout << "sample number: " << samplePoints.size() << endl;
 	cout << "anchor number: " << anchorPoints.size() << endl;
-	int offset1 = blockSize / 2;
-	int offset2 = blockSize - offset1;
+	int offset1 = block_size / 2;
+	int offset2 = block_size - offset1;
 	int N = mask.rows, M = mask.cols;
 	vector<vector<int> > my_mask(N, vector<int>(M, 0));
 	for (int i = 0; i < N;i++)
@@ -990,13 +992,8 @@ int *StructurePropagation::DP(const vector<PointPos> &samplePoints, vector<Point
 	return sampleIndices;
 }
 
-void StructurePropagation::SetParm(int _blocksize, int _samplestep, int _iscurve) {
-	this->blockSize = _blocksize;
-	this->sampleStep = _samplestep;
-	this->isCurve = _iscurve;
-}
-
-double StructurePropagation::calcE2(const Mat &mat, const PointPos &i1, const PointPos &i2, const PointPos &xi1, const PointPos &xi2) {
+double StructurePropagation::calcE2(const Mat &mat, const PointPos &i1, const PointPos &i2, const PointPos &xi1, const PointPos &xi2)
+{
 	int colLeft1, colLeft2, colRight1, colRight2;
 	int rowUp1, rowUp2, rowDown1, rowDown2;
 	Point p1 = pointManager.getPoint(i1);
@@ -1007,37 +1004,37 @@ double StructurePropagation::calcE2(const Mat &mat, const PointPos &i1, const Po
 	if (p1.x > p2.x) {
 		colLeft1 = 0;
 		colLeft2 = p1.x - p2.x;
-		colRight1 = blockSize - colLeft2;
-		colRight2 = blockSize;
+		colRight1 = block_size - colLeft2;
+		colRight2 = block_size;
 	}
 	else {
 		colLeft2 = 0;
 		colLeft1 = p2.x - p1.x;
-		colRight2 = blockSize - colLeft1;
-		colRight1 = blockSize;
+		colRight2 = block_size - colLeft1;
+		colRight1 = block_size;
 	}
 
 	if (p1.y > p2.y) {
 		rowUp1 = 0;
 		rowUp2 = p1.y - p2.y;
-		rowDown1 = blockSize - rowUp2;
-		rowDown2 = blockSize;
+		rowDown1 = block_size - rowUp2;
+		rowDown2 = block_size;
 	}
 	else {
 		rowUp2 = 0;
 		rowUp1 = p2.y - p1.y;
-		rowDown2 = blockSize - rowUp1;
-		rowDown1 = blockSize;
+		rowDown2 = block_size - rowUp1;
+		rowDown1 = block_size;
 	}
 	if (colRight1 >= 0 && colRight2 >= 0 && rowDown1 >= 0 && rowDown2 >= 0) {
 		double ssd = 0.0;
 		int cols = colRight1 - colLeft1;
 		int rows = rowDown1 - rowUp1;
 		// calculate the absolute cooordinates of boundaries
-		int xOffset1 = colLeft1 + px1.x - blockSize / 2;
-		int xOffset2 = colLeft2 + px2.x - blockSize / 2;
-		int yOffset1 = rowUp1 + px1.y - blockSize / 2;
-		int yOffset2 = rowUp2 + px2.y - blockSize / 2;
+		int xOffset1 = colLeft1 + px1.x - block_size / 2;
+		int xOffset2 = colLeft2 + px2.x - block_size / 2;
+		int yOffset1 = rowUp1 + px1.y - block_size / 2;
+		int yOffset2 = rowUp2 + px2.y - block_size / 2;
 		for (int i = 0; i < rows; i++) {
 			const uchar *ptr1 = mat.ptr<uchar>(i + yOffset1);
 			const uchar *ptr2 = mat.ptr<uchar>(i + yOffset2);
@@ -1169,8 +1166,8 @@ double StructurePropagation::calcEs(const PointPos &i, const PointPos &xi) {
 
 double StructurePropagation::calcEi(const Mat &mat, const PointPos &i, const PointPos &xi) {
 	if (pointManager.nearBoundary(i)) {
-		int offset1 = blockSize / 2;
-		int offset2 = blockSize - offset1;
+		int offset1 = block_size / 2;
+		int offset2 = block_size - offset1;
 		int ssd = 0;
 		int overlappingPixelNum = 0;
 		Point pi = pointManager.getPoint(i);

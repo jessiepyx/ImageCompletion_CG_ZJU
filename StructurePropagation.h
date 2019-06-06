@@ -21,21 +21,22 @@ public:
 		//ks = 0.75;
 	}
 	~StructurePropagation(){}
-	void Run(const Mat1b &_mask, const Mat& _img, Mat1b &Linemask, vector<vector<Point>> &linePoints, Mat& result);
+	void SetParam(int block_size,int sample_step,int line_or_curve);
+	void Run(const Mat &mask, const Mat& img, Mat &smask, vector<vector<Point>> &plist, Mat& result);
+
 	void TextureCompletion(const Mat1b &_mask, Mat1b &LineMask, const Mat &mat, Mat &result);
 	void TextureCompletion2(Mat1b _mask, Mat1b LineMask, const Mat &mat, Mat &result);
-	void SetParm(int _blocksize,int _samplestep,int _iscurve);
 
 private:
-	int blockSize;
-	int sampleStep;
-	int isCurve;
+	int block_size;
+	int sample_step;
+	int line_or_curve;
 	double ki;
 	double ks;
 	PointManager pointManager;
 
 	void getResult(Mat1b mask, int *sampleIndices, const vector<PointPos> &samplePoints, vector<PointPos> &anchorPoints, Mat& result);
-	void ModifyMask(Mat1b &LineMask, vector<PointPos>AnchorPoints);
+	void ModifyMask(Mat &LineMask, vector<PointPos>AnchorPoints);
 	int *DP(const vector<PointPos> &samplePoints, vector<PointPos> &anchorPoints, const Mat &mat);
 	int *BP(const vector<PointPos> &samplePoints, vector<PointPos> &anchorPoints, const Mat &mat);
 	double gauss(double x);
