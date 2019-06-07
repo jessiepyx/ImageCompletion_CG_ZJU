@@ -4,5 +4,8 @@ f:\opencv\build\include\opencv2\core\persistence.hpp : warning C4819: 该文件�
 f:\opencv\build\include\opencv2\core\utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
 f:\opencv\build\include\opencv2\core\utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
 f:\opencv\build\include\opencv2\imgproc.hpp(591): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-d:\19ss\19cg\texture\texture\texturecompletion.cpp(32): warning C4101: “test_mask”: 未引用的局部变量
+d:\19ss\19cg\texture\texture\texturecompletion.cpp(36): warning C4101: “test_mask”: 未引用的局部变量
+d:\19ss\19cg\texture\texture\texturecompletion.cpp(403): warning C4101: “test_mask”: 未引用的局部变量
+d:\19ss\19cg\texture\texture\texturecompletion.cpp(846): warning C4101: “m”: 未引用的局部变量
+d:\19ss\19cg\texture\texture\texturecompletion.cpp(846): warning C4101: “n”: 未引用的局部变量
   Texture.vcxproj -> D:\19SS\19CG\Texture\x64\Debug\Texture.exe
