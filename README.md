@@ -44,7 +44,8 @@ Contributed by Jessie Peng
 
 Contributed by Xiu
 
-Demo video in [weibo](https://m.weibo.cn/status/4380715229967145?wm=3333_2001&from=1095193010&sourcetype=qq&featurecode=newtitle)
+Demo video in [weibo](https://m.weibo.cn/status/4380715229967145?wm=3333_2001&from=1095193010&sourcetype=qq&featurecode=newtitle) 
+(Watching with your phone will be better)
 
 ### Evironment
 
