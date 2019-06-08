@@ -43,3 +43,13 @@ Contributed by Jessie Peng
 ## Texture Synthesis
 
 Contributed by Xiu
+
+Demo video in [weibo](https://m.weibo.cn/status/4380715229967145?wm=3333_2001&from=1095193010&sourcetype=qq&featurecode=newtitle)
+
+### Evironment
+
+- Language: C++14
+- IDE: CLion 2018.3
+- OpenCV 3.3.0 (suitable for OpenCV 4 and Opencv 2)
+
+### Reference
