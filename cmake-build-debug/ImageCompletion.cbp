@@ -90,6 +90,12 @@
 		<Unit filename="/Users/alexis/Code/ImageCompletion_CG_ZJU/OpenCvUtility.h">
 			<Option target="ImageCompletion"/>
 		</Unit>
+		<Unit filename="/Users/alexis/Code/ImageCompletion_CG_ZJU/Photometric.cpp">
+			<Option target="ImageCompletion"/>
+		</Unit>
+		<Unit filename="/Users/alexis/Code/ImageCompletion_CG_ZJU/Photometric.h">
+			<Option target="ImageCompletion"/>
+		</Unit>
 		<Unit filename="/Users/alexis/Code/ImageCompletion_CG_ZJU/PointManager.cpp">
 			<Option target="ImageCompletion"/>
 		</Unit>

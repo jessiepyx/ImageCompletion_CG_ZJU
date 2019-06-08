@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/alexis/Code/ImageCompletion_CG_ZJU/OpenCvUtility.cpp" "/Users/alexis/Code/ImageCompletion_CG_ZJU/cmake-build-debug/CMakeFiles/ImageCompletion.dir/OpenCvUtility.cpp.o"
+  "/Users/alexis/Code/ImageCompletion_CG_ZJU/Photometric.cpp" "/Users/alexis/Code/ImageCompletion_CG_ZJU/cmake-build-debug/CMakeFiles/ImageCompletion.dir/Photometric.cpp.o"
   "/Users/alexis/Code/ImageCompletion_CG_ZJU/PointManager.cpp" "/Users/alexis/Code/ImageCompletion_CG_ZJU/cmake-build-debug/CMakeFiles/ImageCompletion.dir/PointManager.cpp.o"
   "/Users/alexis/Code/ImageCompletion_CG_ZJU/StructurePropagation.cpp" "/Users/alexis/Code/ImageCompletion_CG_ZJU/cmake-build-debug/CMakeFiles/ImageCompletion.dir/StructurePropagation.cpp.o"
   "/Users/alexis/Code/ImageCompletion_CG_ZJU/main.cpp" "/Users/alexis/Code/ImageCompletion_CG_ZJU/cmake-build-debug/CMakeFiles/ImageCompletion.dir/main.cpp.o"

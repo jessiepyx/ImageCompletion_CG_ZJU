@@ -4,6 +4,8 @@
 #include <time.h>
 #define mp make_pair
 
+#include "Photometric.h"
+
 void StructurePropagation::SetParam(int block_size, int sample_step, int line_or_curve)
 {
 	this->block_size = block_size;
@@ -576,7 +578,10 @@ void StructurePropagation::getResult(Mat1b mask, int *sampleIndices, const vecto
 		my_mask[i][j] = (mask.at<uchar>(i, j) > 0);
 		if (my_mask[i][j]) mask.at<uchar>(i, j) = 255;
 	}
-	//imshow("mask", mask);
+//	imshow("mask", mask);
+
+	Photometric::initMask(result, mask);
+
 	for (int i = 0; i < anchorPoints.size(); i++) {
 		Point src = pointManager.getPoint(samplePoints[sampleIndices[i]]);
 		Point tar = pointManager.getPoint(anchorPoints[i]);
@@ -628,7 +633,13 @@ void StructurePropagation::getResult(Mat1b mask, int *sampleIndices, const vecto
 				my_mask[tar.y + m][tar.x + n] = 1;
 
 		}*/
-		
+
+		Mat patch = result(Rect(src.x - offset1, src.y - offset1, block_size, block_size)).clone();
+//		imshow("patch", patch);
+		Photometric::correctE(patch, src.x - offset1, src.y - offset1);
+//        imshow("patch2", patch);
+//        waitKey(0);
+
 		for (int m = -offset1; m < offset2; m++) {
 			int tary = tar.y + m;
 			const Vec3b* srcPtr = result.ptr<Vec3b>(src.y + m);
@@ -639,7 +650,9 @@ void StructurePropagation::getResult(Mat1b mask, int *sampleIndices, const vecto
 					my_mask[tar.y + m][tar.x + n] = 1;
 				}
 				else {
-					result.at<Vec3b>(tar.y + m, tar.x + n) = fuse(srcPtr[src.x + n], result.at<Vec3b>(tar.y + m, tar.x + n), 0.5);
+//					result.at<Vec3b>(tar.y + m, tar.x + n) = fuse(srcPtr[src.x + n], result.at<Vec3b>(tar.y + m, tar.x + n), 0.5);
+                    result.at<Vec3b>(tar.y + m, tar.x + n) = patch.at<Vec3b>(m + offset1, n + offset1);
+//                    result.at<Vec3b>(tar.y + m, tar.x + n) = fuse(patch.at<Vec3b>(m, n), result.at<Vec3b>(tar.y + m, tar.x + n), 0.5);
 				}
 			}
 		}

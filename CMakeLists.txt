@@ -8,5 +8,5 @@ find_package(OpenCV)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_executable(ImageCompletion main.cpp OpenCvUtility.cpp OpenCvUtility.h PointManager.cpp PointManager.h
-        StructurePropagation.cpp StructurePropagation.h)
+        StructurePropagation.cpp StructurePropagation.h Photometric.cpp Photometric.h)
 target_link_libraries(ImageCompletion ${OpenCV_LIBS})
