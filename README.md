@@ -49,7 +49,7 @@ Demo video in [weibo](https://m.weibo.cn/status/4380715229967145?wm=3333_2001&fr
 ### Evironment
 
 - Language: C++14
-- IDE: CLion 2018.3
+- IDE: Microsoft Visual Studio 2017
 - OpenCV 3.3.0 (suitable for OpenCV 4 and Opencv 2)
 
 ### Reference
