@@ -10,6 +10,16 @@
 using namespace cv;
 using namespace std;
 
+void mergeImg(Mat & dst, Mat3b &src1, Mat3b &src2)
+{
+	int rows = src1.rows;
+	int cols = src1.cols + 5 + src2.cols;
+	CV_Assert(src1.type() == src2.type());
+	dst.create(rows, cols, src1.type());
+	src1.copyTo(dst(Rect(0, 0, src1.cols, src1.rows)));
+	src2.copyTo(dst(Rect(src1.cols + 5, 0, src2.cols, src2.rows)));
+}
+
 int sqr(int x)
 {
 	return x * x;
@@ -329,7 +339,7 @@ Mat1b getContous(string a, Mat1b linemask) {
 	//M是高度
 	//N是长度
 	int M, N;
-	int safe_distence = 8;		//距离结构线的安全距离
+	int safe_distence = 18;		//距离结构线的安全距离
 	M = linemask.rows;
 	N = linemask.cols;
 	ifstream infile;
@@ -376,6 +386,8 @@ Mat1b getContous(string a, Mat1b linemask) {
 			}
 			else {
 				for (int back = 1; back < safe_distence; back++) {
+					//myMap[j-back][i] = 0;
+					if (j-back > 0)
 					contousMap[j-back][i] = 0;
 				}
 				flag = 1;
@@ -391,12 +403,16 @@ Mat1b getContous(string a, Mat1b linemask) {
 	return contousMap;
 }
 
+
+
+
+
 //全黑色是0，全白色是255
 // mask: 二值化的mask图像
 // Linemask：暂时理解为结构线
 // mat：是之前带有mask的没有进行纹理补全的结果
 // result：最后输出的结果
-void TextureCompletion3(Mat3b img, Mat1b map, Mat1b _mask, Mat1b LineMask, const Mat &mat, Mat &result)
+void TextureCompletion3(Mat3b img, Mat1b map, Mat1b _mask, Mat1b LineMask, const Mat &mat, Mat3b &result)
 {
 	int N = _mask.rows;
 	int M = _mask.cols;
@@ -486,6 +502,7 @@ void TextureCompletion3(Mat3b img, Mat1b map, Mat1b _mask, Mat1b LineMask, const
 
 			int itertime = 0;
 			Mat match;
+			Mat output;
 			match = result.clone();
 			while (true)
 			{
@@ -576,7 +593,34 @@ void TextureCompletion3(Mat3b img, Mat1b map, Mat1b _mask, Mat1b LineMask, const
 						//结束循环的时候，得到的是对比xy有最小tmpdiff的点的坐标sx，sy
 					}
 				cout << "对应的点是xy：" << sx << sy << endl;
+				if (sx == 1000000 && sy == 1000000) {
+					for (int i = step; i + step < N; i += step)
+						for (int j = step; j + step < M; j += step)
+						{
+							//通过usable找到最近的不需要填充的像素点
+							//如果==2说明这里的纹理不可用
+							//if (usable[i][j] == 2)continue;
+							if (map[i][j] != map[x][y]) continue;
+							int tmp_diff = 0;
+							//取到xy周围step的矩形邻域
+							for (int k = -k0; k <= k1; k++)
+								for (int l = -l0; l <= l1; l++)
+								{
+									if (my_mask[x + k][y + l] != 0)
+										tmp_diff += dist(result.at<Vec3b>(i + k, j + l), result.at<Vec3b>(x + k, y + l));
+								
 
+								}
+							sum_diff[i][j] = tmp_diff;
+							if (min_diff > tmp_diff)
+							{
+								sx = i;
+								sy = j;
+								min_diff = tmp_diff;
+							}
+							
+						}
+				}
 				//usable[x][y] = -1;
 				//用（sx，sy）周围的点的RGB值填充xy周围需要被填充的点
 				for (int k = -k0; k <= k1; k++)
@@ -590,13 +634,20 @@ void TextureCompletion3(Mat3b img, Mat1b map, Mat1b _mask, Mat1b LineMask, const
 							img.at<Vec3b>(x, y) = Vec3b(0, 0, 255);
 
 						}
-				imshow("Origin", img);
+				
+				mergeImg(output, img, result);
+				imshow("Output", output);
 				waitKey(10);
 				printf("done :%.2lf%%\n", 100.0 * filled / to_fill);
-				imwrite("final.png", result);
-				imshow("Final", result);
-				waitKey(10);
+				//imwrite("final.png", result);
+				/*imshow("Final", result);
+				waitKey(10);*/
 			}
+			mergeImg(output, img, result);
+			imwrite("final.png", result);
+			imwrite("Output.png", output);
+			imshow("Output", output);
+			waitKey(10);
 }
 
 
@@ -845,12 +896,12 @@ int main()
 	//四个输入：mask，line，
 	int m, n;
 	//读入原图
-	Mat3b origin = imread("origin\\img3.png");	
-	Mat3b img = imread("sp_result\\sp3.png");//5,1
+	Mat3b origin = imread("origin\\img5.png");	
+	Mat3b img = imread("sp_result\\sp5.png");//5,1
 	
 	//读入二值化的mask图像
 	Mat1b mask = Mat::zeros(img.rows, img.cols, CV_8UC1);
-	mask = imread("mask\\mask3.bmp", 0);
+	mask = imread("mask\\mask5.bmp", 0);
 	
 	threshold(mask, mask, 125, 255, CV_THRESH_BINARY_INV);
 	/*imshow("img", img);
@@ -865,7 +916,7 @@ int main()
 	waitKey(10);*/
 	//读入linemask
 	Mat1b Linemask = Mat::zeros(img.rows, img.cols, CV_8UC1);
-	Linemask = imread("line\\mask_s3.bmp", 0);
+	Linemask = imread("line\\mask_s5.bmp", 0);
 	
 
 	/*imshow("line", Linemask);
@@ -877,7 +928,7 @@ int main()
 	img.copyTo(finalResult1);
 	/*imshow("final", finalResult1);
 	waitKey(10);*/
-	Mat1b map = getContous("list\\plist3.txt", Linemask);
+	Mat1b map = getContous("list\\plist5.txt", Linemask);
 	//TextureCompletion1(mask, Linemask, result, finalResult1);
 	//TextureCompletion2(mask, Linemask, result, finalResult2);
 	TextureCompletion3(origin, map, mask, Linemask, result, finalResult2);
