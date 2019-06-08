@@ -150,6 +150,33 @@ OpenCvUtility.cpp.s:
 	$(MAKE) -f CMakeFiles/ImageCompletion.dir/build.make CMakeFiles/ImageCompletion.dir/OpenCvUtility.cpp.s
 .PHONY : OpenCvUtility.cpp.s
 
+Photometric.o: Photometric.cpp.o
+
+.PHONY : Photometric.o
+
+# target to build an object file
+Photometric.cpp.o:
+	$(MAKE) -f CMakeFiles/ImageCompletion.dir/build.make CMakeFiles/ImageCompletion.dir/Photometric.cpp.o
+.PHONY : Photometric.cpp.o
+
+Photometric.i: Photometric.cpp.i
+
+.PHONY : Photometric.i
+
+# target to preprocess a source file
+Photometric.cpp.i:
+	$(MAKE) -f CMakeFiles/ImageCompletion.dir/build.make CMakeFiles/ImageCompletion.dir/Photometric.cpp.i
+.PHONY : Photometric.cpp.i
+
+Photometric.s: Photometric.cpp.s
+
+.PHONY : Photometric.s
+
+# target to generate assembly for a file
+Photometric.cpp.s:
+	$(MAKE) -f CMakeFiles/ImageCompletion.dir/build.make CMakeFiles/ImageCompletion.dir/Photometric.cpp.s
+.PHONY : Photometric.cpp.s
+
 PointManager.o: PointManager.cpp.o
 
 .PHONY : PointManager.o
@@ -243,6 +270,9 @@ help:
 	@echo "... OpenCvUtility.o"
 	@echo "... OpenCvUtility.i"
 	@echo "... OpenCvUtility.s"
+	@echo "... Photometric.o"
+	@echo "... Photometric.i"
+	@echo "... Photometric.s"
 	@echo "... PointManager.o"
 	@echo "... PointManager.i"
 	@echo "... PointManager.s"

@@ -63,6 +63,7 @@ void get_input_image()
     img = imread("img" + to_string(img_current) + ".png", 1);
     imshow("img", img);
     char k = waitKey(0);
+    cout << "choose images" << endl;
     while (k != 27)
     {
         // last image

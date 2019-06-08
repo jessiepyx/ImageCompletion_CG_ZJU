@@ -3,6 +3,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/ImageCompletion.dir/OpenCvUtility.cpp.o"
   "CMakeFiles/ImageCompletion.dir/PointManager.cpp.o"
   "CMakeFiles/ImageCompletion.dir/StructurePropagation.cpp.o"
+  "CMakeFiles/ImageCompletion.dir/Photometric.cpp.o"
   "ImageCompletion.pdb"
   "ImageCompletion"
 )
