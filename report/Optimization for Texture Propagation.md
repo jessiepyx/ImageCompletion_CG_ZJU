@@ -108,8 +108,8 @@ for each point: patch
 
 - Only Global search without structure line estimate(with and without)
 
-![h123](.\result\2.png)
+![h123](./result/2.png)
 
-![i123](.\result\1.png)
+![i123](./result/1.png)
 
-![j123](.\result by Xiu\man output.png)
+![j123](./result by Xiu/man output.png)
