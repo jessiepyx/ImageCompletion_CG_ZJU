@@ -1,8 +1,14 @@
 ### Pre-process of the dataset
 
-##### 1. Mix the mask and origin image
+##### 1. Mix the Mask, Structure Line and Origin Image
 
-(这里加两张图片：带mask的汽车，和origin汽车图片)
+![img3](./img3.png)
+
+![1560067830893](.\mask\mask3.bmp)
+
+![spresult3](.\line\mask_s3.bmp)
+
+![spresult3](.\sp_result\sp3.png)
 
 ##### 2. Find the Adjacent Domain
 
@@ -20,14 +26,27 @@
 
 - OR-Equal
 
-  ![1560051984437](./1560051984437.png)  
+  ![1560067107827](.\1560067107827.png)
+
+```c++
+for(int i = 1; point i form [point1 ~ point8])
+{
+    is_mask |= (mask[point i] == 0);
+}
+Edge_map[p][q] = 1;
+return Edge_map;
+```
+
+
+
+
 
 ##### 2. Computing patch priority
 
 - Filling order is crucial to non-parametric texture synthesis
 - Best-first filling algorithm
 
-这里要用两页PPT介绍（第一页介绍本文方法，第二页介绍后人方法，图片之后补充上去）
+这里要用2页PPT介绍（第一页介绍本文方法，第二页介绍后人方法，图片之后补充上去）
 
 ##### 2. Propagation texture information
 
@@ -36,7 +55,15 @@
 
 ![1560060665906](./1560060665906.png)
 
+number of points: input_length/patch
+
+for each point: patch
+
 ##### 3. Updating confidence value
+
+
+
+*放视频！*
 
 ### Optimization for Texture Propagation
 
@@ -45,7 +72,9 @@
 - Use a novel map to represent the expended area of the specific mask
 - As for each edge point, the neighborhood of it should also be fixed
 
-图片（待生成）
+![1560067830893](.\mask\mask2.bmp)
+
+![1560067830893](.\img2.png)
 
 ##### 2. Narrow the Area to Reference
 
@@ -53,9 +82,34 @@
 - When generating adjacent domain, set a safe-distance to keep away with structure line
 - In order to avoid the points near the structure line with unclear texture
 
-##### 3. Photometirc Correction
+##### 3. Photometric Correction
 
 
 
 
 
+### Show the result
+
+- Computing patch priority(with and without)
+
+![1560067830893](.\result\2.png)
+
+![1560067830893](.\car final.png)
+
+![1560067830893](.\result\5.png)
+
+![1560067830893](.\result by Xiu\Eagle output.png)
+
+- Expand and Narrow(with and without)
+
+![1560067830893](.\result by Xiu\wrong\using three lines.png)
+
+
+
+- Only Global search without structure line estimate(with and without)
+
+![1560067830893](.\result\2.png)
+
+![1560067830893](.\result\1.png)
+
+![1560067830893](.\result by Xiu\man output.png)
