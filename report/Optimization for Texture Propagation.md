@@ -92,17 +92,17 @@ for each point: patch
 
 - Computing patch priority(with and without)
 
-![c123](.\result\2.png)
+![c123](./result/2.png)
 
-![d123](.\car final.png)
+![d123](./Carfinal.png)
 
-![e123](.\result\5.png)
+![e123](./result/5.png)
 
-![f123](.\resultbyXiu\Eagleoutput.png)
+![f123](./resultbyXiu/Eagleoutput.png)
 
 - Expand and Narrow(with and without)
 
-![g123](.\resultbyXiu\wrong\usingthreelines.png)
+![g123](./resultbyXiu/wrong/usingthreelines.png)
 
 
 
