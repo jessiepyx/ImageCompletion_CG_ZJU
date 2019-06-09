@@ -92,24 +92,24 @@ for each point: patch
 
 - Computing patch priority(with and without)
 
-![1560067830893](.\result\2.png)
+![156006cc7830893](.\result\2.png)
 
-![1560067830893](.\car final.png)
+![ss1560067830893](.\car final.png)
 
-![1560067830893](.\result\5.png)
+![1560067830vv893](.\result\5.png)
 
-![1560067830893](.\result by Xiu\Eagle output.png)
+![cc1560067830893](.\result by Xiu\Eagle output.png)
 
 - Expand and Narrow(with and without)
 
-![1560067830893](.\result by Xiu\wrong\using three lines.png)
+![aa1560067830893](.\result by Xiu\wrong\using three lines.png)
 
 
 
 - Only Global search without structure line estimate(with and without)
 
-![1560067830893](.\result\2.png)
+![156006783089ll3](.\result\2.png)
 
-![1560067830893](.\result\1.png)
+![zxcxzc1560067830893](.\result\1.png)
 
-![1560067830893](.\result by Xiu\man output.png)
+![zxc1560067830893](.\result by Xiu\man output.png)
