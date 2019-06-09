@@ -8,11 +8,11 @@
 
 - Traversing the image to generate a Map
 
-  ![1560051175606](D:\19SS\19CG\Texture\Texture\report\1560051175606.png)
+  ![1560051175606](.\1560051175606.png)
 
 ### Region-filling algorithm
 
-![img](file:///D:/19SS/19CG/Texture/Texture/report/1560050536223.png?lastModify=1560050819?lastModify=1560050819)
+![img](./1560050536223.png?lastModify=1560050819?lastModify=1560050819)
 
 ##### 1. Find the edge points set
 
@@ -20,7 +20,7 @@
 
 - OR-Equal
 
-  ![1560051984437](D:\19SS\19CG\Texture\Texture\report\1560051984437.png)  
+  ![1560051984437](.\1560051984437.png)  
 
 ##### 2. Computing patch priority
 
@@ -34,7 +34,7 @@
 - In specific area
 - In neighborhood
 
-![1560060665906](D:\19SS\19CG\Texture\Texture\report\1560060665906.png)
+![1560060665906](.\1560060665906.png)
 
 ##### 3. Updating confidence value
 
