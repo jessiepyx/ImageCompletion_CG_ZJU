@@ -26,7 +26,7 @@
 
 - OR-Equal
 
-  ![1560067107827](.\1560067107827.png)
+  ![7827](.\1560067107827.png)
 
 ```c++
 for(int i = 1; point i form [point1 ~ point8])
