@@ -98,11 +98,11 @@ for each point: patch
 
 ![e123](.\result\5.png)
 
-![f123](.\result by Xiu\Eagle output.png)
+![f123](.\resultbyXiu\Eagleoutput.png)
 
 - Expand and Narrow(with and without)
 
-![g123](.\result by Xiu\wrong\using three lines.png)
+![g123](.\resultbyXiu\wrong\usingthreelines.png)
 
 
 
@@ -112,4 +112,4 @@ for each point: patch
 
 ![i123](./result/1.png)
 
-![j123](./result by Xiu/man output.png)
+![j123](./resultbyXiu/manoutput.png)
