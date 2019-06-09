@@ -635,9 +635,9 @@ void TextureCompletion3(Mat3b img, Mat1b map, Mat1b _mask, Mat1b LineMask, const
 
 						}
 				
-				mergeImg(output, img, result);
+				/*mergeImg(output, img, result);
 				imshow("Output", output);
-				waitKey(10);
+				waitKey(10);*/
 				printf("done :%.2lf%%\n", 100.0 * filled / to_fill);
 				//imwrite("final.png", result);
 				/*imshow("Final", result);
@@ -896,12 +896,12 @@ int main()
 	//四个输入：mask，line，
 	int m, n;
 	//读入原图
-	Mat3b origin = imread("origin\\img5.png");	
-	Mat3b img = imread("sp_result\\sp5.png");//5,1
+	Mat3b origin = imread("origin\\img4.png");	
+	Mat3b img = imread("sp_result\\sp4.png");//5,1
 	
 	//读入二值化的mask图像
 	Mat1b mask = Mat::zeros(img.rows, img.cols, CV_8UC1);
-	mask = imread("mask\\mask5.bmp", 0);
+	mask = imread("mask\\mask4.bmp", 0);
 	
 	threshold(mask, mask, 125, 255, CV_THRESH_BINARY_INV);
 	/*imshow("img", img);
@@ -916,7 +916,7 @@ int main()
 	waitKey(10);*/
 	//读入linemask
 	Mat1b Linemask = Mat::zeros(img.rows, img.cols, CV_8UC1);
-	Linemask = imread("line\\mask_s5.bmp", 0);
+	Linemask = imread("line\\mask_s4.bmp", 0);
 	
 
 	/*imshow("line", Linemask);
@@ -928,7 +928,7 @@ int main()
 	img.copyTo(finalResult1);
 	/*imshow("final", finalResult1);
 	waitKey(10);*/
-	Mat1b map = getContous("list\\plist5.txt", Linemask);
+	Mat1b map = getContous("list\\plist4.txt", Linemask);
 	//TextureCompletion1(mask, Linemask, result, finalResult1);
 	//TextureCompletion2(mask, Linemask, result, finalResult2);
 	TextureCompletion3(origin, map, mask, Linemask, result, finalResult2);
