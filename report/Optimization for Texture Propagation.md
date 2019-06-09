@@ -4,11 +4,11 @@
 
 ![img3](./img3.png)
 
-![1560067830893](.\mask\mask3.bmp)
+![1560067830893](./mask/mask3.bmp)
 
-![spresult3](.\line\mask_s3.bmp)
+![spresult3](./line/mask_s3.bmp)
 
-![spresult3](.\sp_result\sp3.png)
+![spresult3](./sp_result/sp3.png)
 
 ##### 2. Find the Adjacent Domain
 
@@ -26,7 +26,7 @@
 
 - OR-Equal
 
-  ![7827](.\1560067107827.png)
+  ![7827](./1560067107827.png)
 
 ```c++
 for(int i = 1; point i form [point1 ~ point8])
@@ -72,9 +72,9 @@ for each point: patch
 - Use a novel map to represent the expended area of the specific mask
 - As for each edge point, the neighborhood of it should also be fixed
 
-![a123](.\mask\mask2.bmp)
+![a123](./mask/mask2.bmp)
 
-![b123](.\img2.png)
+![b123](./img2.png)
 
 ##### 2. Narrow the Area to Reference
 
@@ -98,7 +98,7 @@ for each point: patch
 
 ![e123](./result/5.png)
 
-![f123](./resultbyXiu/Eagleoutput.png)
+![f123](./resultbyXiu/eagleOutput.png)
 
 - Expand and Narrow(with and without)
 
