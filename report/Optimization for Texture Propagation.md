@@ -72,9 +72,9 @@ for each point: patch
 - Use a novel map to represent the expended area of the specific mask
 - As for each edge point, the neighborhood of it should also be fixed
 
-![1560067830893](.\mask\mask2.bmp)
+![a123](.\mask\mask2.bmp)
 
-![1560067830893](.\img2.png)
+![b123](.\img2.png)
 
 ##### 2. Narrow the Area to Reference
 
@@ -92,24 +92,24 @@ for each point: patch
 
 - Computing patch priority(with and without)
 
-![156006cc7830893](.\result\2.png)
+![c123](.\result\2.png)
 
-![ss1560067830893](.\car final.png)
+![d123](.\car final.png)
 
-![1560067830vv893](.\result\5.png)
+![e123](.\result\5.png)
 
-![cc1560067830893](.\result by Xiu\Eagle output.png)
+![f123](.\result by Xiu\Eagle output.png)
 
 - Expand and Narrow(with and without)
 
-![aa1560067830893](.\result by Xiu\wrong\using three lines.png)
+![g123](.\result by Xiu\wrong\using three lines.png)
 
 
 
 - Only Global search without structure line estimate(with and without)
 
-![156006783089ll3](.\result\2.png)
+![h123](.\result\2.png)
 
-![zxcxzc1560067830893](.\result\1.png)
+![i123](.\result\1.png)
 
-![zxc1560067830893](.\result by Xiu\man output.png)
+![j123](.\result by Xiu\man output.png)
