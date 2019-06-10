@@ -4,6 +4,8 @@
 #include "StructurePropagation.h"
 #include "OpenCvUtility.h"
 
+#include "TextureCompletion.h"
+
 using namespace std;
 using namespace cv;
 
@@ -200,7 +202,6 @@ void show_interface()
     ofstream f;
     f.open("point_list/plist" + to_string(img_current) + ".txt", ios::out); // clear old data
     f.close();
-    f.open("point_list/plist" + to_string(img_current) + ".txt", ios::app); // append
 
 	namedWindow("run");
 	createTrackbar("Block Size", "run", &block_size, 50);
@@ -229,11 +230,13 @@ void show_interface()
                 DrawPoints(plist[i], draw_structure, CV_RGB(255, 0, 0), 1);
 
                 // save points along structure lines/curves
+                f.open("point_list/plist" + to_string(img_current) + ".txt", ios::app); // append
                 for (int j = 0; j < plist[i].size(); j++)
                 {
                     f << plist[i][j].x << " " << plist[i][j].y << endl;
                 }
                 f << endl;
+                f.close();
             }
 
             Mat mask_structure_tmp = Mat::zeros(img.rows, img.cols, CV_8UC1);
@@ -281,14 +284,13 @@ void show_interface()
         // texture synthesis
         else if (k == 't')
         {
-            SP.TextureCompletion2(mask, mask_structure, sp_result, ts_result);
+//            SP.TextureCompletion2(mask, mask_structure, sp_result, ts_result);
+            texture(img, sp_result, mask, ts_result, mask_structure, "point_list/plist" + to_string(img_current) + ".txt");
             imshow("run", ts_result);
         }
 
         k = waitKey(0);
 	}
-
-	f.close();
 }
 
 /**

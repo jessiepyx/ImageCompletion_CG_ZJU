@@ -98,7 +98,8 @@ void StructurePropagation::ModifyMask(Mat &LineMask, vector<PointPos>AnchorPoint
 				int nx = tar.y + j;
 				int ny = tar.x + k;
 				if (nx < 0 || nx >= N || ny < 0 || ny >= M) continue;
-				LineMask.at<uchar>(nx, ny) = 2;
+//				LineMask.at<uchar>(nx, ny) = 2;
+				LineMask.at<uchar>(nx, ny) = 255;
 			}
 		}
 	}
@@ -124,414 +125,414 @@ void MyFree(int **MyNode,int N,int M)
 	free(MyNode);
 }
 
-int sqr(int x)
-{
-	return x * x;
-}
+//int sqr(int x)
+//{
+//	return x * x;
+//}
+//
+//int dist(Vec3b V1, Vec3b V2)
+//{
+//	return sqr(int(V1[0]) - int(V2[0])) + sqr(int(V1[1]) - int(V2[1])) + sqr(int(V1[2]) - int(V2[2]));
+//	/*double pr = (V1[0] + V2[0]) * 0.5;
+//	return sqr(V1[0] - V2[0]) * (2 + (255 - pr) / 256)
+//	+ sqr(V1[1] - V2[1]) * 4
+//	+ sqr(V1[2] - V2[2]) * (2 + pr / 256);*/
+//}
 
-int dist(Vec3b V1, Vec3b V2)
-{
-	return sqr(int(V1[0]) - int(V2[0])) + sqr(int(V1[1]) - int(V2[1])) + sqr(int(V1[2]) - int(V2[2]));
-	/*double pr = (V1[0] + V2[0]) * 0.5;
-	return sqr(V1[0] - V2[0]) * (2 + (255 - pr) / 256)
-	+ sqr(V1[1] - V2[1]) * 4
-	+ sqr(V1[2] - V2[2]) * (2 + pr / 256);*/
-}
-
-void StructurePropagation::TextureCompletion2(Mat1b _mask, Mat1b LineMask, const Mat &mat, Mat &result)
-{
-	int N = _mask.rows;
-	int M = _mask.cols;
-	int knowncount = 0;
-	for (int i = 0; i < N;i++)
-	for (int j = 0; j < M; j++)
-	{
-		knowncount += (_mask.at<uchar>(i, j) == 255);
-	}
-	if (knowncount * 2< N * M)
-	{
-		for (int i = 0; i < N;i++)
-		for (int j = 0; j < M; j++)
-			_mask.at<uchar>(i, j) = 255 - _mask.at<uchar>(i, j);
-	}
-	
-	vector<vector<int> >my_mask(N, vector<int>(M, 0)), sum_diff(N, vector<int>(M, 0));
-	
-	for (int i = 0; i < N;i++)
-	for (int j = 0; j < M; j++)
-	LineMask.at<uchar>(i, j) = LineMask.at<uchar>(i, j) * 100;
-	
-	result = mat.clone();
-	imshow("mask", _mask);
-	imshow("linemask", LineMask);
-	for (int i = 0; i < N; i++)
-	for (int j = 0; j < M; j++)
-	{
-		my_mask[i][j] = (_mask.at<uchar>(i, j) == 255);
-		if (my_mask[i][j] == 0 && LineMask.at<uchar>(i, j) > 0)
-		{
-			my_mask[i][j] = 2;
-		}
-	}
-	int bs = 5;
-	int step = 1 * bs;
-	auto usable(my_mask);
-	int to_fill = 0, filled = 0;
-	for (int i = 0; i < N; i++)
-	for (int j = 0; j < M; j++)
-	{
-		to_fill += (my_mask[i][j] == 0);
-	}
-	for (int i = 0; i < N; i++)
-	for (int j = 0; j < M; j++)
-	{
-		if (my_mask[i][j] == 1)
-			continue;
-		int k0 = max(0, i - step), k1 = min(N - 1, i + step);
-		int l0 = max(0, j - step), l1 = min(M - 1, j + step);
-		for (int k = k0; k <= k1; k++)
-		for (int l = l0; l <= l1; l++)
-			usable[k][l] = 2;
-	}
-	Mat use = _mask.clone();
-	for (int i = 0; i < N; i++)
-	for (int j = 0; j < M; j++)
-	if (usable[i][j] == 2)
-		use.at<uchar>(i, j) = 255;
-	else use.at<uchar>(i, j) = 0;
-	//imshow("usable", use);
-	int itertime = 0;
-	Mat match;
-	while (true)
-	{
-		itertime++;
-		int x, y, cnt = -1;
-		for (int i = 0; i < N; i++)
-		for (int j = 0; j < M; j++)
-		{
-			if (my_mask[i][j] != 0) continue;
-			bool edge = false;
-			int k0 = max(0, i - 1), k1 = min(N - 1, i + 1);
-			int l0 = max(0, j - 1), l1 = min(M - 1, j + 1);
-			for (int k = k0; k <= k1;k++)
-			for (int l = l0; l <= l1; l++)
-				edge |= (my_mask[k][l] == 1);
-			if (!edge) continue;
-			k0 = max(0, i - bs), k1 = min(N - 1, i + bs);
-			l0 = max(0, j - bs), l1 = min(M - 1, j + bs);
-			int tmpcnt = 0;
-			for (int k = k0; k <= k1; k++)
-			for (int l = l0; l <= l1; l++)
-				tmpcnt += (my_mask[k][l] == 1);
-			if (tmpcnt > cnt)
-			{
-				cnt = tmpcnt;
-				x = i;
-				y = j;
-			}
-		}
-		if (cnt == -1) break;
-
-		bool debug = false;
-		bool debug2 = false;
-		int k0 = min(x, bs), k1 = min(N - 1 - x, bs);
-		int l0 = min(y, bs), l1 = min(M - 1 - y, bs);
-		int sx, sy, min_diff = INT_MAX;
-		for (int i = step; i + step < N; i += step)
-		for (int j = step; j + step < M; j += step)
-		{
-			if (usable[i][j] == 2)continue;
-			int tmp_diff = 0;
-			for (int k = -k0; k <= k1; k++)
-			for (int l = -l0; l <= l1; l++)
-			{
-				//printf("%d %d %d %d %d %d\n", i + k, j + l, x + k, y + l, N, M);
-				if (my_mask[x + k][y + l] != 0)
-					tmp_diff += dist(result.at<Vec3b>(i + k, j + l), result.at<Vec3b>(x + k, y + l));
-			}
-			sum_diff[i][j] = tmp_diff;
-			if (min_diff > tmp_diff)
-			{
-				sx = i;
-				sy = j;
-				min_diff = tmp_diff;
-			}
-		}
-
-
-		if (debug)
-		{
-			printf("x = %d y = %d\n", x, y);
-			printf("sx = %d sy = %d\n", sx, sy);
-			printf("mindiff = %d\n", min_diff);
-		}
-		if (debug2)
-		{
-			match = result.clone();
-		}
-		for (int k = -k0; k <= k1; k++)
-		for (int l = -l0; l <= l1; l++)
-		if (my_mask[x + k][y + l] == 0)
-		{
-			result.at<Vec3b>(x + k, y + l) = result.at<Vec3b>(sx + k, sy + l);
-			my_mask[x + k][y + l] = 1;
-			filled++;
-			if (debug)
-			{
-				result.at<Vec3b>(x + k, y + l) = Vec3b(255, 0, 0);
-				result.at<Vec3b>(sx + k, sy + l) = Vec3b(0, 255, 0);
-			}
-			if (debug2)
-			{
-				match.at<Vec3b>(x + k, y + l) = Vec3b(255, 0, 0);
-				match.at<Vec3b>(sx + k, sy + l) = Vec3b(0, 255, 0);
-			}
-		}
-		else
-		{
-			if (debug)
-			{
-				printf("(%d,%d,%d) matches (%d,%d,%d)\n", result.at<Vec3b>(x + k, y + l)[0], result.at<Vec3b>(x + k, y + l)[1], result.at<Vec3b>(x + k, y + l)[2], result.at<Vec3b>(sx + k, sy + l)[0], result.at<Vec3b>(sx + k, sy + l)[1], result.at<Vec3b>(sx + k, sy + l)[2]);
-			}
-		}
-		if (debug2)
-		{
-			imshow("match", match);
-		}
-		if (debug) return;
-		printf("done :%.2lf%%\n", 100.0 * filled / to_fill);
-	}
-}
-
-
-void StructurePropagation::TextureCompletion(const Mat1b &_mask, Mat1b &LineMask, const Mat &mat, Mat &result)
-{
-	const int PatchSize = 5;
-	const int step = 2*PatchSize;
-	
-	int N = mat.rows;
-	int M = mat.cols;
-
-	//prework
-	int **my_mask, **neighbor;
-	int **pixelcnt;
-	my_mask = MyAlloc(N, M);
-	pixelcnt = MyAlloc(N, M);//count of known pixels around (i,j)
-	neighbor = MyAlloc(N, M);
-	/*
-	my_mask = (int**)malloc(sizeof(int*) * N);
-	for (int i = 0; i < N; i++)
-	{
-	my_mask[i] = (int*)malloc(sizeof(int)* M);
-	}*/
-
-	for (int i = 0; i < N; i++)
-	for (int j = 0; j < M; j++)
-	{
-		int tmp = _mask.at<uchar>(i, j);
-		if (tmp == 255) tmp = 1;
-		my_mask[i][j] = tmp;
-	}
-
-	for (int i = 0; i < N; i++)
-	for (int j = 0; j < M; j++)
-	{
-		pixelcnt[i][j] = 0;
-		neighbor[i][j] = 0;
-		for (int k = -PatchSize; k <= PatchSize; k++)
-		for (int l = -PatchSize; l <= PatchSize; l++)
-		{
-			if (i + k < 0 || i + k >= N) continue;
-			if (j + l < 0 || j + l >= M) continue;
-			pixelcnt[i][j] += (my_mask[i + k][j + l] == 1);
-			neighbor[i][j]++;
-		}
-	}
-	/*
-	for (int i = 0; i < 20; i++)
-	{
-	for (int j = 0; j < 20; j++)printf("%d", my_mask[i][j]);
-	puts("");
-	}*/
-
-	for (int i = 0; i < N;i++)
-	for (int j = 0; j < M; j++)
-	{
-		if (LineMask.at<uchar>(i, j) == 2 && my_mask[i][j] == 0)
-		{
-			my_mask[i][j] = 2;
-		}
-	}
-
-	//mask test
-	
-	/*
-	for (int i = 0; i < N; i++)
-	for (int j = 0; j < M; j++)
-	{
-		for (int k = 0; k < 3; k++)
-			result.at<Vec3b>(i,j)[k] = 0;
-		result.at<Vec3b>(i, j)[my_mask[i][j]] = 255;
-	}
-	return;*/
-
-	// Get sample patches
-	// Sample: [i-PatchSize,i+PatchSize] * [j-PatchSize,j+PatchSize]
-	vector<pair<int, int> >Sample;
-	for (int i = step; i < N - step; i += step)
-	for (int j = step; j < M - step; j += step)
-	{
-		bool ok = true;
-		for (int k = -PatchSize; k <= PatchSize; k++)
-		for (int l = -PatchSize; l <= PatchSize; l++)
-		{
-			ok &= (my_mask[i + k][j + l] == 1);
-		}
-		if (ok) Sample.emplace_back(i, j);
-	}
-
-	printf("size = %d\n", Sample.size());
-
-	//do it!
-	priority_queue<pair<int,pair<int,int> > >heap;
-	for (int i = 0; i < N; i++)
-	{
-		//printf("%d\n", i);
-		for (int j = 0; j < M; j++)
-		if (my_mask[i][j] == 0)
-		{
-			bool edge;
-			edge = (i > 0 && my_mask[i - 1][j] == 1) ||
-				(i < N - 1 && my_mask[i + 1][j] == 1) ||
-				(j > 0 && my_mask[i][j - 1] == 1) ||
-				(j < M - 1 && my_mask[i][j + 1] == 1);
-
-			if (!edge) continue;
-			heap.push(mp(pixelcnt[i][j], mp(i, j)));
-		}
-	}
-	puts("done");
-
-	result = mat.clone();
-
-	
-	int done = 0;
-	while (!heap.empty())
-	{
-		auto tmp = heap.top();
-		printf("ch = %d\n", tmp.first);
-		heap.pop();
-		int x = tmp.second.first;
-		int y = tmp.second.second;
-		if (my_mask[x][y] != 0) continue;
-		//printf("solve %d %d\n", x, y);
-		done++;
-		if (done % 100 == 0)
-		{
-			printf("%d\n", done);
-		}
-		double minD = 1e9,patchnum = -1;
-		int minSpaceD = 1e9;
-		const double K1 = 1, K2 = 1;
-		for (int i = 0; i < Sample.size(); i++)
-		{
-			int sx = Sample[i].first, sy = Sample[i].second;
-			int D = 0;
-			for (int j = -PatchSize; j <= PatchSize;j++)
-			for (int k = -PatchSize; k <= PatchSize; k++)
-			{
-				if (x + j < 0 || x + j >= N) continue;
-				if (y + k < 0 || y + k >= M) continue;
-				if (my_mask[x + j][y + k] == 0) continue;
-				D += dist(result.at<Vec3b>(x + j, y + k), result.at<Vec3b>(sx + j, sy + k));
-			}
-			if (D < minD)
-			{
-				minD = D;
-			}
-		}
-		for (int i = 0; i < Sample.size(); i++)
-		{
-			int sx = Sample[i].first, sy = Sample[i].second;
-			int D = 0;
-			for (int j = -PatchSize; j <= PatchSize; j++)
-			for (int k = -PatchSize; k <= PatchSize; k++)
-			{
-				if (x + j < 0 || x + j >= N) continue;
-				if (y + k < 0 || y + k >= M) continue;
-				if (my_mask[x + j][y + k] == 0) continue;
-				D += dist(result.at<Vec3b>(x + j, y + k), result.at<Vec3b>(sx + j, sy + k));
-			}
-			if (D < minD * 1.2)
-			{
-				int SpaceD = sqr(sx - x) + sqr(sy - y);
-				if (SpaceD < minSpaceD)
-				{
-					minSpaceD = SpaceD;
-					patchnum = i;
-				}
-			}
-		}
-		int sx = Sample[patchnum].first, sy = Sample[patchnum].second;
-
-		if (done == 30)
-		{
-			for (int i = -PatchSize; i <= PatchSize;i++)
-			for (int j = -PatchSize; j <= PatchSize; j++)
-			{
-				result.at<Vec3b>(x + i, y + j)[0] = 255;
-				result.at<Vec3b>(x + i, y + j)[1] = 0;
-				result.at<Vec3b>(x + i, y + j)[2] = 0;
-
-				result.at<Vec3b>(sx + i, sy + j)[0] = 0;
-				result.at<Vec3b>(sx + i, sy + j)[1] = 255;
-				result.at<Vec3b>(sx + i, sy + j)[2] = 0;
-			}
-			break;
-		}
-		//printf("target = %d %d\n", sx, sy);
-		for (int j = -PatchSize; j <= PatchSize; j++)
-		for (int k = -PatchSize; k <= PatchSize; k++)
-		{
-			if (x + j < 0 || x + j >= N) continue;
-			if (y + k < 0 || y + k >= M) continue;
-			if (my_mask[x + j][y + k] != 0) continue;
-			my_mask[x + j][y + k] = 3;
-			result.at<Vec3b>(x + j, y + k) = result.at<Vec3b>(sx + j, sy + k);
-		}
-		for (int j = -PatchSize-1; j <= PatchSize+1; j++)
-		for (int k = -PatchSize-1; k <= PatchSize+1; k++)
-		{
-			if (x + j < 0 || x + j >= N) continue;
-			if (y + k < 0 || y + k >= M) continue;
-			if (my_mask[x + j][y + k] != 0) continue;
-			int sx = x + j, sy = y + k;
-
-			bool edge;
-			edge = (sx > 0 && my_mask[sx - 1][sy] != 0) ||
-				(sx < N - 1 && my_mask[sx + 1][sy] != 0) ||
-				(sy > 0 && my_mask[sx][sy - 1] != 0) ||
-				(sy < M - 1 && my_mask[sx][sy + 1] != 0);
-
-			if (!edge) continue;
-
-			pixelcnt[sx][sy] = 0;
-			for (int l = -PatchSize; l <= PatchSize; l++)
-			for (int m = -PatchSize; m <= PatchSize;m++)
-			{
-				if (sx + l < 0 || sx + l >= N) continue;
-				if (sy + m < 0 || sy + m >= M) continue;
-				pixelcnt[sx][sy] += (my_mask[sx + l][sy + m] % 2 != 0);
-			}
-			heap.push(mp(pixelcnt[sx][sy], mp(sx, sy)));
-		}
-	}
-
-	//free
-	MyFree(my_mask, N, M);
-	MyFree(pixelcnt, N, M);
-	MyFree(neighbor, N, M);
-}
+//void StructurePropagation::TextureCompletion2(Mat1b _mask, Mat1b LineMask, const Mat &mat, Mat &result)
+//{
+//	int N = _mask.rows;
+//	int M = _mask.cols;
+//	int knowncount = 0;
+//	for (int i = 0; i < N;i++)
+//	for (int j = 0; j < M; j++)
+//	{
+//		knowncount += (_mask.at<uchar>(i, j) == 255);
+//	}
+//	if (knowncount * 2< N * M)
+//	{
+//		for (int i = 0; i < N;i++)
+//		for (int j = 0; j < M; j++)
+//			_mask.at<uchar>(i, j) = 255 - _mask.at<uchar>(i, j);
+//	}
+//
+//	vector<vector<int> >my_mask(N, vector<int>(M, 0)), sum_diff(N, vector<int>(M, 0));
+//
+//	for (int i = 0; i < N;i++)
+//	for (int j = 0; j < M; j++)
+//	LineMask.at<uchar>(i, j) = LineMask.at<uchar>(i, j) * 100;
+//
+//	result = mat.clone();
+//	imshow("mask", _mask);
+//	imshow("linemask", LineMask);
+//	for (int i = 0; i < N; i++)
+//	for (int j = 0; j < M; j++)
+//	{
+//		my_mask[i][j] = (_mask.at<uchar>(i, j) == 255);
+//		if (my_mask[i][j] == 0 && LineMask.at<uchar>(i, j) > 0)
+//		{
+//			my_mask[i][j] = 2;
+//		}
+//	}
+//	int bs = 5;
+//	int step = 1 * bs;
+//	auto usable(my_mask);
+//	int to_fill = 0, filled = 0;
+//	for (int i = 0; i < N; i++)
+//	for (int j = 0; j < M; j++)
+//	{
+//		to_fill += (my_mask[i][j] == 0);
+//	}
+//	for (int i = 0; i < N; i++)
+//	for (int j = 0; j < M; j++)
+//	{
+//		if (my_mask[i][j] == 1)
+//			continue;
+//		int k0 = max(0, i - step), k1 = min(N - 1, i + step);
+//		int l0 = max(0, j - step), l1 = min(M - 1, j + step);
+//		for (int k = k0; k <= k1; k++)
+//		for (int l = l0; l <= l1; l++)
+//			usable[k][l] = 2;
+//	}
+//	Mat use = _mask.clone();
+//	for (int i = 0; i < N; i++)
+//	for (int j = 0; j < M; j++)
+//	if (usable[i][j] == 2)
+//		use.at<uchar>(i, j) = 255;
+//	else use.at<uchar>(i, j) = 0;
+//	//imshow("usable", use);
+//	int itertime = 0;
+//	Mat match;
+//	while (true)
+//	{
+//		itertime++;
+//		int x, y, cnt = -1;
+//		for (int i = 0; i < N; i++)
+//		for (int j = 0; j < M; j++)
+//		{
+//			if (my_mask[i][j] != 0) continue;
+//			bool edge = false;
+//			int k0 = max(0, i - 1), k1 = min(N - 1, i + 1);
+//			int l0 = max(0, j - 1), l1 = min(M - 1, j + 1);
+//			for (int k = k0; k <= k1;k++)
+//			for (int l = l0; l <= l1; l++)
+//				edge |= (my_mask[k][l] == 1);
+//			if (!edge) continue;
+//			k0 = max(0, i - bs), k1 = min(N - 1, i + bs);
+//			l0 = max(0, j - bs), l1 = min(M - 1, j + bs);
+//			int tmpcnt = 0;
+//			for (int k = k0; k <= k1; k++)
+//			for (int l = l0; l <= l1; l++)
+//				tmpcnt += (my_mask[k][l] == 1);
+//			if (tmpcnt > cnt)
+//			{
+//				cnt = tmpcnt;
+//				x = i;
+//				y = j;
+//			}
+//		}
+//		if (cnt == -1) break;
+//
+//		bool debug = false;
+//		bool debug2 = false;
+//		int k0 = min(x, bs), k1 = min(N - 1 - x, bs);
+//		int l0 = min(y, bs), l1 = min(M - 1 - y, bs);
+//		int sx, sy, min_diff = INT_MAX;
+//		for (int i = step; i + step < N; i += step)
+//		for (int j = step; j + step < M; j += step)
+//		{
+//			if (usable[i][j] == 2)continue;
+//			int tmp_diff = 0;
+//			for (int k = -k0; k <= k1; k++)
+//			for (int l = -l0; l <= l1; l++)
+//			{
+//				//printf("%d %d %d %d %d %d\n", i + k, j + l, x + k, y + l, N, M);
+//				if (my_mask[x + k][y + l] != 0)
+//					tmp_diff += dist(result.at<Vec3b>(i + k, j + l), result.at<Vec3b>(x + k, y + l));
+//			}
+//			sum_diff[i][j] = tmp_diff;
+//			if (min_diff > tmp_diff)
+//			{
+//				sx = i;
+//				sy = j;
+//				min_diff = tmp_diff;
+//			}
+//		}
+//
+//
+//		if (debug)
+//		{
+//			printf("x = %d y = %d\n", x, y);
+//			printf("sx = %d sy = %d\n", sx, sy);
+//			printf("mindiff = %d\n", min_diff);
+//		}
+//		if (debug2)
+//		{
+//			match = result.clone();
+//		}
+//		for (int k = -k0; k <= k1; k++)
+//		for (int l = -l0; l <= l1; l++)
+//		if (my_mask[x + k][y + l] == 0)
+//		{
+//			result.at<Vec3b>(x + k, y + l) = result.at<Vec3b>(sx + k, sy + l);
+//			my_mask[x + k][y + l] = 1;
+//			filled++;
+//			if (debug)
+//			{
+//				result.at<Vec3b>(x + k, y + l) = Vec3b(255, 0, 0);
+//				result.at<Vec3b>(sx + k, sy + l) = Vec3b(0, 255, 0);
+//			}
+//			if (debug2)
+//			{
+//				match.at<Vec3b>(x + k, y + l) = Vec3b(255, 0, 0);
+//				match.at<Vec3b>(sx + k, sy + l) = Vec3b(0, 255, 0);
+//			}
+//		}
+//		else
+//		{
+//			if (debug)
+//			{
+//				printf("(%d,%d,%d) matches (%d,%d,%d)\n", result.at<Vec3b>(x + k, y + l)[0], result.at<Vec3b>(x + k, y + l)[1], result.at<Vec3b>(x + k, y + l)[2], result.at<Vec3b>(sx + k, sy + l)[0], result.at<Vec3b>(sx + k, sy + l)[1], result.at<Vec3b>(sx + k, sy + l)[2]);
+//			}
+//		}
+//		if (debug2)
+//		{
+//			imshow("match", match);
+//		}
+//		if (debug) return;
+//		printf("done :%.2lf%%\n", 100.0 * filled / to_fill);
+//	}
+//}
+//
+//
+//void StructurePropagation::TextureCompletion(const Mat1b &_mask, Mat1b &LineMask, const Mat &mat, Mat &result)
+//{
+//	const int PatchSize = 5;
+//	const int step = 2*PatchSize;
+//
+//	int N = mat.rows;
+//	int M = mat.cols;
+//
+//	//prework
+//	int **my_mask, **neighbor;
+//	int **pixelcnt;
+//	my_mask = MyAlloc(N, M);
+//	pixelcnt = MyAlloc(N, M);//count of known pixels around (i,j)
+//	neighbor = MyAlloc(N, M);
+//	/*
+//	my_mask = (int**)malloc(sizeof(int*) * N);
+//	for (int i = 0; i < N; i++)
+//	{
+//	my_mask[i] = (int*)malloc(sizeof(int)* M);
+//	}*/
+//
+//	for (int i = 0; i < N; i++)
+//	for (int j = 0; j < M; j++)
+//	{
+//		int tmp = _mask.at<uchar>(i, j);
+//		if (tmp == 255) tmp = 1;
+//		my_mask[i][j] = tmp;
+//	}
+//
+//	for (int i = 0; i < N; i++)
+//	for (int j = 0; j < M; j++)
+//	{
+//		pixelcnt[i][j] = 0;
+//		neighbor[i][j] = 0;
+//		for (int k = -PatchSize; k <= PatchSize; k++)
+//		for (int l = -PatchSize; l <= PatchSize; l++)
+//		{
+//			if (i + k < 0 || i + k >= N) continue;
+//			if (j + l < 0 || j + l >= M) continue;
+//			pixelcnt[i][j] += (my_mask[i + k][j + l] == 1);
+//			neighbor[i][j]++;
+//		}
+//	}
+//	/*
+//	for (int i = 0; i < 20; i++)
+//	{
+//	for (int j = 0; j < 20; j++)printf("%d", my_mask[i][j]);
+//	puts("");
+//	}*/
+//
+//	for (int i = 0; i < N;i++)
+//	for (int j = 0; j < M; j++)
+//	{
+//		if (LineMask.at<uchar>(i, j) == 2 && my_mask[i][j] == 0)
+//		{
+//			my_mask[i][j] = 2;
+//		}
+//	}
+//
+//	//mask test
+//
+//	/*
+//	for (int i = 0; i < N; i++)
+//	for (int j = 0; j < M; j++)
+//	{
+//		for (int k = 0; k < 3; k++)
+//			result.at<Vec3b>(i,j)[k] = 0;
+//		result.at<Vec3b>(i, j)[my_mask[i][j]] = 255;
+//	}
+//	return;*/
+//
+//	// Get sample patches
+//	// Sample: [i-PatchSize,i+PatchSize] * [j-PatchSize,j+PatchSize]
+//	vector<pair<int, int> >Sample;
+//	for (int i = step; i < N - step; i += step)
+//	for (int j = step; j < M - step; j += step)
+//	{
+//		bool ok = true;
+//		for (int k = -PatchSize; k <= PatchSize; k++)
+//		for (int l = -PatchSize; l <= PatchSize; l++)
+//		{
+//			ok &= (my_mask[i + k][j + l] == 1);
+//		}
+//		if (ok) Sample.emplace_back(i, j);
+//	}
+//
+//	printf("size = %d\n", Sample.size());
+//
+//	//do it!
+//	priority_queue<pair<int,pair<int,int> > >heap;
+//	for (int i = 0; i < N; i++)
+//	{
+//		//printf("%d\n", i);
+//		for (int j = 0; j < M; j++)
+//		if (my_mask[i][j] == 0)
+//		{
+//			bool edge;
+//			edge = (i > 0 && my_mask[i - 1][j] == 1) ||
+//				(i < N - 1 && my_mask[i + 1][j] == 1) ||
+//				(j > 0 && my_mask[i][j - 1] == 1) ||
+//				(j < M - 1 && my_mask[i][j + 1] == 1);
+//
+//			if (!edge) continue;
+//			heap.push(mp(pixelcnt[i][j], mp(i, j)));
+//		}
+//	}
+//	puts("done");
+//
+//	result = mat.clone();
+//
+//
+//	int done = 0;
+//	while (!heap.empty())
+//	{
+//		auto tmp = heap.top();
+//		printf("ch = %d\n", tmp.first);
+//		heap.pop();
+//		int x = tmp.second.first;
+//		int y = tmp.second.second;
+//		if (my_mask[x][y] != 0) continue;
+//		//printf("solve %d %d\n", x, y);
+//		done++;
+//		if (done % 100 == 0)
+//		{
+//			printf("%d\n", done);
+//		}
+//		double minD = 1e9,patchnum = -1;
+//		int minSpaceD = 1e9;
+//		const double K1 = 1, K2 = 1;
+//		for (int i = 0; i < Sample.size(); i++)
+//		{
+//			int sx = Sample[i].first, sy = Sample[i].second;
+//			int D = 0;
+//			for (int j = -PatchSize; j <= PatchSize;j++)
+//			for (int k = -PatchSize; k <= PatchSize; k++)
+//			{
+//				if (x + j < 0 || x + j >= N) continue;
+//				if (y + k < 0 || y + k >= M) continue;
+//				if (my_mask[x + j][y + k] == 0) continue;
+//				D += dist(result.at<Vec3b>(x + j, y + k), result.at<Vec3b>(sx + j, sy + k));
+//			}
+//			if (D < minD)
+//			{
+//				minD = D;
+//			}
+//		}
+//		for (int i = 0; i < Sample.size(); i++)
+//		{
+//			int sx = Sample[i].first, sy = Sample[i].second;
+//			int D = 0;
+//			for (int j = -PatchSize; j <= PatchSize; j++)
+//			for (int k = -PatchSize; k <= PatchSize; k++)
+//			{
+//				if (x + j < 0 || x + j >= N) continue;
+//				if (y + k < 0 || y + k >= M) continue;
+//				if (my_mask[x + j][y + k] == 0) continue;
+//				D += dist(result.at<Vec3b>(x + j, y + k), result.at<Vec3b>(sx + j, sy + k));
+//			}
+//			if (D < minD * 1.2)
+//			{
+//				int SpaceD = sqr(sx - x) + sqr(sy - y);
+//				if (SpaceD < minSpaceD)
+//				{
+//					minSpaceD = SpaceD;
+//					patchnum = i;
+//				}
+//			}
+//		}
+//		int sx = Sample[patchnum].first, sy = Sample[patchnum].second;
+//
+//		if (done == 30)
+//		{
+//			for (int i = -PatchSize; i <= PatchSize;i++)
+//			for (int j = -PatchSize; j <= PatchSize; j++)
+//			{
+//				result.at<Vec3b>(x + i, y + j)[0] = 255;
+//				result.at<Vec3b>(x + i, y + j)[1] = 0;
+//				result.at<Vec3b>(x + i, y + j)[2] = 0;
+//
+//				result.at<Vec3b>(sx + i, sy + j)[0] = 0;
+//				result.at<Vec3b>(sx + i, sy + j)[1] = 255;
+//				result.at<Vec3b>(sx + i, sy + j)[2] = 0;
+//			}
+//			break;
+//		}
+//		//printf("target = %d %d\n", sx, sy);
+//		for (int j = -PatchSize; j <= PatchSize; j++)
+//		for (int k = -PatchSize; k <= PatchSize; k++)
+//		{
+//			if (x + j < 0 || x + j >= N) continue;
+//			if (y + k < 0 || y + k >= M) continue;
+//			if (my_mask[x + j][y + k] != 0) continue;
+//			my_mask[x + j][y + k] = 3;
+//			result.at<Vec3b>(x + j, y + k) = result.at<Vec3b>(sx + j, sy + k);
+//		}
+//		for (int j = -PatchSize-1; j <= PatchSize+1; j++)
+//		for (int k = -PatchSize-1; k <= PatchSize+1; k++)
+//		{
+//			if (x + j < 0 || x + j >= N) continue;
+//			if (y + k < 0 || y + k >= M) continue;
+//			if (my_mask[x + j][y + k] != 0) continue;
+//			int sx = x + j, sy = y + k;
+//
+//			bool edge;
+//			edge = (sx > 0 && my_mask[sx - 1][sy] != 0) ||
+//				(sx < N - 1 && my_mask[sx + 1][sy] != 0) ||
+//				(sy > 0 && my_mask[sx][sy - 1] != 0) ||
+//				(sy < M - 1 && my_mask[sx][sy + 1] != 0);
+//
+//			if (!edge) continue;
+//
+//			pixelcnt[sx][sy] = 0;
+//			for (int l = -PatchSize; l <= PatchSize; l++)
+//			for (int m = -PatchSize; m <= PatchSize;m++)
+//			{
+//				if (sx + l < 0 || sx + l >= N) continue;
+//				if (sy + m < 0 || sy + m >= M) continue;
+//				pixelcnt[sx][sy] += (my_mask[sx + l][sy + m] % 2 != 0);
+//			}
+//			heap.push(mp(pixelcnt[sx][sy], mp(sx, sy)));
+//		}
+//	}
+//
+//	//free
+//	MyFree(my_mask, N, M);
+//	MyFree(pixelcnt, N, M);
+//	MyFree(neighbor, N, M);
+//}
 
 double StructurePropagation::gauss(double x)
 {

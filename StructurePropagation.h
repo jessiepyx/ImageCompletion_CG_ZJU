@@ -24,8 +24,8 @@ public:
 	void SetParam(int block_size,int sample_step,int line_or_curve);
 	void Run(const Mat &mask, const Mat& img, Mat &smask, vector<vector<Point>> &plist, Mat& result);
 
-	void TextureCompletion(const Mat1b &_mask, Mat1b &LineMask, const Mat &mat, Mat &result);
-	void TextureCompletion2(Mat1b _mask, Mat1b LineMask, const Mat &mat, Mat &result);
+//	void TextureCompletion(const Mat1b &_mask, Mat1b &LineMask, const Mat &mat, Mat &result);
+//	void TextureCompletion2(Mat1b _mask, Mat1b LineMask, const Mat &mat, Mat &result);
 
 private:
 	int block_size;
