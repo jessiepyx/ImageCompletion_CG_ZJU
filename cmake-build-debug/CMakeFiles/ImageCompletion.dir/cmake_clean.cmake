@@ -4,6 +4,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/ImageCompletion.dir/PointManager.cpp.o"
   "CMakeFiles/ImageCompletion.dir/StructurePropagation.cpp.o"
   "CMakeFiles/ImageCompletion.dir/Photometric.cpp.o"
+  "CMakeFiles/ImageCompletion.dir/TextureCompletion.cpp.o"
   "ImageCompletion.pdb"
   "ImageCompletion"
 )

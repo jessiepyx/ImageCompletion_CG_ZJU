@@ -881,7 +881,7 @@ void TextureCompletion1(Mat1b _mask, Mat1b LineMask, const Mat &mat, Mat &result
 
 
 
-void texture(Mat3b origin, Mat3b img, Mat1b mask, Mat &finalResult2, Mat1b Linemask, string listpath)
+void texture(Mat origin, Mat img, Mat mask, Mat &finalResult2, Mat Linemask, string listpath)
 {
 	//ËÄ¸öÊäÈë£ºmask£¬line£¬
 	int m, n;

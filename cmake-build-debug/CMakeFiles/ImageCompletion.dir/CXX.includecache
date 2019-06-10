@@ -16,10 +16,6 @@ vector
 opencv2/opencv.hpp
 -
 
-/Users/alexis/Code/ImageCompletion_CG_ZJU/Photometric.h
-opencv2/opencv.hpp
--
-
 /Users/alexis/Code/ImageCompletion_CG_ZJU/PointManager.h
 iostream
 -
@@ -33,18 +29,6 @@ unordered_map
 -
 memory
 -
-
-/Users/alexis/Code/ImageCompletion_CG_ZJU/StructurePropagation.cpp
-StructurePropagation.h
-/Users/alexis/Code/ImageCompletion_CG_ZJU/StructurePropagation.h
-algorithm
--
-queue
--
-time.h
--
-Photometric.h
-/Users/alexis/Code/ImageCompletion_CG_ZJU/Photometric.h
 
 /Users/alexis/Code/ImageCompletion_CG_ZJU/StructurePropagation.h
 OpenCvUtility.h
@@ -61,6 +45,36 @@ set
 -
 math.h
 -
+
+/Users/alexis/Code/ImageCompletion_CG_ZJU/TextureCompletion.h
+opencv2/opencv.hpp
+-
+iostream
+-
+algorithm
+-
+string
+-
+stdio.h
+-
+string.h
+-
+queue
+-
+
+/Users/alexis/Code/ImageCompletion_CG_ZJU/main.cpp
+iostream
+-
+vector
+-
+opencv2/opencv.hpp
+-
+StructurePropagation.h
+/Users/alexis/Code/ImageCompletion_CG_ZJU/StructurePropagation.h
+OpenCvUtility.h
+/Users/alexis/Code/ImageCompletion_CG_ZJU/OpenCvUtility.h
+TextureCompletion.h
+/Users/alexis/Code/ImageCompletion_CG_ZJU/TextureCompletion.h
 
 /usr/local/anaconda3/include/opencv/cxcore.h
 opencv2/core/core_c.h

@@ -231,6 +231,33 @@ StructurePropagation.cpp.s:
 	$(MAKE) -f CMakeFiles/ImageCompletion.dir/build.make CMakeFiles/ImageCompletion.dir/StructurePropagation.cpp.s
 .PHONY : StructurePropagation.cpp.s
 
+TextureCompletion.o: TextureCompletion.cpp.o
+
+.PHONY : TextureCompletion.o
+
+# target to build an object file
+TextureCompletion.cpp.o:
+	$(MAKE) -f CMakeFiles/ImageCompletion.dir/build.make CMakeFiles/ImageCompletion.dir/TextureCompletion.cpp.o
+.PHONY : TextureCompletion.cpp.o
+
+TextureCompletion.i: TextureCompletion.cpp.i
+
+.PHONY : TextureCompletion.i
+
+# target to preprocess a source file
+TextureCompletion.cpp.i:
+	$(MAKE) -f CMakeFiles/ImageCompletion.dir/build.make CMakeFiles/ImageCompletion.dir/TextureCompletion.cpp.i
+.PHONY : TextureCompletion.cpp.i
+
+TextureCompletion.s: TextureCompletion.cpp.s
+
+.PHONY : TextureCompletion.s
+
+# target to generate assembly for a file
+TextureCompletion.cpp.s:
+	$(MAKE) -f CMakeFiles/ImageCompletion.dir/build.make CMakeFiles/ImageCompletion.dir/TextureCompletion.cpp.s
+.PHONY : TextureCompletion.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -279,6 +306,9 @@ help:
 	@echo "... StructurePropagation.o"
 	@echo "... StructurePropagation.i"
 	@echo "... StructurePropagation.s"
+	@echo "... TextureCompletion.o"
+	@echo "... TextureCompletion.i"
+	@echo "... TextureCompletion.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

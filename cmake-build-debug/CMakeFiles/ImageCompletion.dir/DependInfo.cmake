@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/alexis/Code/ImageCompletion_CG_ZJU/Photometric.cpp" "/Users/alexis/Code/ImageCompletion_CG_ZJU/cmake-build-debug/CMakeFiles/ImageCompletion.dir/Photometric.cpp.o"
   "/Users/alexis/Code/ImageCompletion_CG_ZJU/PointManager.cpp" "/Users/alexis/Code/ImageCompletion_CG_ZJU/cmake-build-debug/CMakeFiles/ImageCompletion.dir/PointManager.cpp.o"
   "/Users/alexis/Code/ImageCompletion_CG_ZJU/StructurePropagation.cpp" "/Users/alexis/Code/ImageCompletion_CG_ZJU/cmake-build-debug/CMakeFiles/ImageCompletion.dir/StructurePropagation.cpp.o"
+  "/Users/alexis/Code/ImageCompletion_CG_ZJU/TextureCompletion.cpp" "/Users/alexis/Code/ImageCompletion_CG_ZJU/cmake-build-debug/CMakeFiles/ImageCompletion.dir/TextureCompletion.cpp.o"
   "/Users/alexis/Code/ImageCompletion_CG_ZJU/main.cpp" "/Users/alexis/Code/ImageCompletion_CG_ZJU/cmake-build-debug/CMakeFiles/ImageCompletion.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")

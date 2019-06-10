@@ -49,7 +49,7 @@ static void callback_draw_structure(int event, int x, int y, int flags, void* pa
 int main(int argc, char* argv[])
 {
     get_input_image();
-    get_input_mask(PRE_MADE_MASK);
+    get_input_mask(USER_DRAW_MASK);
     make_masked_image();
     show_interface();
 	return 0;

@@ -108,6 +108,12 @@
 		<Unit filename="/Users/alexis/Code/ImageCompletion_CG_ZJU/StructurePropagation.h">
 			<Option target="ImageCompletion"/>
 		</Unit>
+		<Unit filename="/Users/alexis/Code/ImageCompletion_CG_ZJU/TextureCompletion.cpp">
+			<Option target="ImageCompletion"/>
+		</Unit>
+		<Unit filename="/Users/alexis/Code/ImageCompletion_CG_ZJU/TextureCompletion.h">
+			<Option target="ImageCompletion"/>
+		</Unit>
 		<Unit filename="/Users/alexis/Code/ImageCompletion_CG_ZJU/main.cpp">
 			<Option target="ImageCompletion"/>
 		</Unit>
