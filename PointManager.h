@@ -1,3 +1,6 @@
+#ifndef POINT_MANAGER_H
+#define POINT_MANAGER_H
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -74,11 +77,11 @@ public:
 	ushort nj;
 
 	Edge(ushort ni, ushort nj) : ni(ni), nj(nj) {
-		Mij = Mji = NULL;
+		Mij = Mji = nullptr;
 	}
 
 	Edge() {
-		Mij = Mji = NULL;
+		Mij = Mji = nullptr;
 	}
 
 	inline ushort getAnother(ushort n) {
@@ -113,8 +116,7 @@ public:
 
 class PointManager {
 public:
-	PointManager() {
-	}
+	PointManager() = default;
 	void reset(const vector<vector<Point>> &linePoints, const Mat1b &mask, int blockSize, set<shared_ptr<list<int>>> &lineSets);
 	Point getPoint(PointPos p);
 	bool nearBoundary(PointPos p);
@@ -149,6 +151,7 @@ private:
 
 	bool nearBoundary(const Point &p, bool isSample);
 	int calcHashValue(int x, int y);
-	void addNeighbor(MyNode &n, const PointPos &pos, vector<vector<ushort>> &visitedMark, list<MyNode> &BFSstack);
 	int addNeighbor(MyNode &n, const PointPos &pos, vector<vector<ushort>> &visitedMark, list<shared_ptr<MyNode>> &neighbors);
 };
+
+#endif /* POINT_MANAGER_H */

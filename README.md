@@ -17,14 +17,14 @@ Contributed by Jessie Peng
 - [x] User interface
   - choose input image
   - draw mask
-  - draw structures
+  - draw structure lines/curve
   
 - [x] Structure propagation
   - single line
   - multiple lines
   - curve
   
-- [ ] Photometric correction
+- [x] Photometric correction (copied from [https://github.com/ruanjiayi](https://github.com/ruanjiayi/Image-Completion-with-Structure-Propagation))
 
 ### Files
 

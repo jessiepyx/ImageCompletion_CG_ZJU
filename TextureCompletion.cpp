@@ -582,7 +582,7 @@ void TextureCompletion3(Mat3b img, Mat1b map, Mat1b _mask, Mat1b LineMask, const
 						}
 						//结束循环的时候，得到的是对比xy有最小tmpdiff的点的坐标sx，sy
 					}
-				cout << "对应的点是xy：" << sx << sy << endl;
+//				cout << "对应的点是xy：" << sx << sy << endl;
 				if (sx == 1000000 && sy == 1000000) {
 					for (int i = step; i + step < N; i += step)
 						for (int j = step; j + step < M; j += step)
@@ -925,5 +925,3 @@ void texture(Mat origin, Mat img, Mat mask, Mat &finalResult2, Mat Linemask, str
 //    imshow("final", finalResult2);
 //    waitKey(0);
 }
-
-

@@ -15,6 +15,9 @@ using namespace cv;
 #define LINE_STRUCTURE 0
 #define CURVE_STRUCTURE 1
 
+#define ks 0.25
+#define ki 0.75
+
 Mat img;
 Mat mask;
 Mat mask_inv;
@@ -33,9 +36,9 @@ vector<vector<Point>> plist;
 vector<vector<Point>> mousepoints;
 StructurePropagation SP;
 int brush_size;
-int img_current = 0;
-int block_size = 12;
-int sample_step = 6;
+int img_current = 4;
+int block_size = 20;
+int sample_step = 10;
 int line_or_curve = LINE_STRUCTURE;
 int points_i=0;
 
@@ -119,7 +122,6 @@ void get_input_mask(int mask_from)
             // smaller brush
             else if (k == '[')
             {
-                cout << "[" << endl;
                 if (brush_size > 1)
                 {
                     brush_size--;
@@ -162,8 +164,8 @@ static void callback_draw_mask(int event, int x, int y, int flags, void* param)
         {
             prev_pt = pt;
         }
-        line(mask, prev_pt, pt, Scalar(255), 1.5 * brush_size);
-        line(draw_mask, prev_pt, pt, Scalar(255, 0, 0), 1.5 * brush_size);
+        line(mask, prev_pt, pt, Scalar(255), 2 * brush_size);
+        line(draw_mask, prev_pt, pt, Scalar(255, 0, 0), 2 * brush_size);
         prev_pt = pt;
     }
     else if (event == CV_EVENT_LBUTTONUP)
@@ -242,7 +244,7 @@ void show_interface()
             Mat mask_structure_tmp = Mat::zeros(img.rows, img.cols, CV_8UC1);
 
             // run structure propagation
-            SP.SetParam(block_size, sample_step, line_or_curve);
+            SP.SetParam(block_size, sample_step, line_or_curve, ks, ki);
             SP.Run(mask_inv, img_masked, mask_structure_tmp, plist, sp_result);
 
             mask_structure_tmp.copyTo(mask_structure, mask_structure_tmp);
@@ -284,7 +286,6 @@ void show_interface()
         // texture synthesis
         else if (k == 't')
         {
-//            SP.TextureCompletion2(mask, mask_structure, sp_result, ts_result);
             texture(img, sp_result, mask, ts_result, mask_structure, "point_list/plist" + to_string(img_current) + ".txt");
             imshow("run", ts_result);
         }

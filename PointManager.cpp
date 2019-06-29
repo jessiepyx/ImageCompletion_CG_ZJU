@@ -269,106 +269,6 @@ void PointManager::getPointsinPatch(const PointPos &p, list<Point*> &begin, list
 	}
 }
 
-/*void PointManager::constructBPMap() {
-map<int, list<PointPos>>::iterator mapItor;
-list<shared_ptr<Node>> BFSstack;
-vector<vector<ushort>> pointVisitedMarks(linePoints.size());
-vector<list<shared_ptr<Node>>> nodeListBucket(4);
-
-nodes.clear();
-propagationStack.clear();
-Node::totalNum = 0;
-
-// initialize the visit map
-pointVisitedMarks.resize(linePoints.size());
-for (int i = 0; i < linePoints.size(); i++) {
-pointVisitedMarks[i].resize(linePoints[i].size());
-}
-
-int total = 0;
-for (int i = 0; i < linePoints.size(); i++) {
-total += linePoints[i].size();
-}
-// reserve enough space for the node table
-nodes.reserve(total / blockSize);
-// skip the entry numbered with 0
-nodes.resize(1);
-
-// enqueue all the intersections
-vector<int> lineVisitedMarks(lineEnds.size());
-for (mapItor = intersectingMap.begin(); mapItor != intersectingMap.end(); mapItor++) {
-// enqueue the intersection (choose one point's position to represent all)
-BFSstack.push_back(make_shared<Node>(*(mapItor->second.begin())));
-// mark all intersecting points as visited
-list<PointPos>::iterator listItor = mapItor->second.begin();
-for (; listItor != mapItor->second.end(); listItor++) {
-pointVisitedMarks[lineEnds[listItor->lineIndex].trueLineIndex][listItor->pointIndex] = Node::totalNum;
-lineVisitedMarks[listItor->lineIndex] = 1;
-}
-}
-
-// enqueue a node in curves not intersecting with others
-for (int i = 0; i < lineEnds.size(); i++) {
-if (lineVisitedMarks[i] == 0) {
-// choose the first anchor point as starting point of propagation
-Endpoints endpoints = lineEnds[i];
-// enqueue the node
-BFSstack.push_back(make_shared<Node>(PointPos(i, endpoints.startIndex)));
-// mark the point as visited
-pointVisitedMarks[endpoints.trueLineIndex][endpoints.startIndex] = Node::totalNum;
-}
-}
-
-// enqueue all the neighbor nodes of intersections
-for (mapItor = intersectingMap.begin(); mapItor != intersectingMap.end(); mapItor++) {
-shared_ptr<Node> n = *BFSstack.begin();
-list<PointPos>::iterator listItor = mapItor->second.begin();
-int neighborNum = 0;
-for (; listItor != mapItor->second.end(); listItor++) {
-neighborNum += addNeighbor(*n, *listItor, pointVisitedMarks, BFSstack);
-}
-// Enlarge nodeListBucket if necessary
-if (neighborNum > nodeListBucket.size()) {
-nodeListBucket.resize(mapItor->second.size() * 2);
-}
-nodeListBucket[neighborNum - 1].push_front(n);
-nodes.push_back(nodeListBucket[neighborNum - 1].begin());
-BFSstack.pop_front();
-}
-
-// start propagation
-while (BFSstack.size()) {
-shared_ptr<Node> n = *BFSstack.begin();
-int neighborNum = addNeighbor(*n, n->p, pointVisitedMarks, BFSstack);
-nodeListBucket[neighborNum - 1].push_front(n);
-nodes.push_back(nodeListBucket[neighborNum - 1].begin());
-BFSstack.pop_front();
-}
-
-//generate the sequence for message sending
-while (nodeListBucket[0].size() > 0) {
-shared_ptr<Node> n = *nodeListBucket[0].begin();
-assert(n->getEdgeNum() == 1);
-list<shared_ptr<Edge>>::iterator eItor = n->getEdgeBegin();
-nodes[n->id] = propagationStack.insert(propagationStack.end(), n);
-nodeListBucket[0].pop_front();
-// degrade the adjacent node
-int id = (*eItor)->getAnother(n->id);
-n = *nodes[id];
-int edgeNum = n->getEdgeNum();
-n->eraseEdge(*eItor);
-nodeListBucket[edgeNum - 1].erase(nodes[id]);
-if (edgeNum > 1) {
-nodes[id] = nodeListBucket[edgeNum - 2].insert(nodeListBucket[edgeNum - 2].end(), n);
-}
-else {
-nodes[id] = propagationStack.insert(propagationStack.end(), n);
-}
-}
-int i = 0;
-i++;
-}*/
-
 void PointManager::constructBPMap(list<int> &line) {
 	map<int, list<PointPos>>::iterator mapItor;
 	list<shared_ptr<MyNode>> BFSstack;
@@ -641,7 +541,6 @@ void PointManager::getSamplePoints(vector<PointPos> &samples, int sampleStep) {
 	}
 	samples.shrink_to_fit();
 }
-
 
 void PointManager::getAnchorPoints(vector<PointPos> &anchors, list<int> &line) {
 	// only called by DP 

@@ -16,6 +16,14 @@ vector
 opencv2/opencv.hpp
 -
 
+/Users/alexis/Code/ImageCompletion_CG_ZJU/Photometric.h
+opencv2/opencv.hpp
+-
+
+/Users/alexis/Code/ImageCompletion_CG_ZJU/PointManager.cpp
+PointManager.h
+/Users/alexis/Code/ImageCompletion_CG_ZJU/PointManager.h
+
 /Users/alexis/Code/ImageCompletion_CG_ZJU/PointManager.h
 iostream
 -
@@ -30,13 +38,21 @@ unordered_map
 memory
 -
 
+/Users/alexis/Code/ImageCompletion_CG_ZJU/StructurePropagation.cpp
+StructurePropagation.h
+/Users/alexis/Code/ImageCompletion_CG_ZJU/StructurePropagation.h
+algorithm
+-
+queue
+-
+Photometric.h
+/Users/alexis/Code/ImageCompletion_CG_ZJU/Photometric.h
+
 /Users/alexis/Code/ImageCompletion_CG_ZJU/StructurePropagation.h
 OpenCvUtility.h
 /Users/alexis/Code/ImageCompletion_CG_ZJU/OpenCvUtility.h
 PointManager.h
 /Users/alexis/Code/ImageCompletion_CG_ZJU/PointManager.h
-OpenCvUtility.h
-/Users/alexis/Code/ImageCompletion_CG_ZJU/OpenCvUtility.h
 map
 -
 list
